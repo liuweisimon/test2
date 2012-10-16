@@ -520,11 +520,11 @@ cloud_properties：name 是我们在 vSphere 中定义的网络名称（见第 I
 
 最好填写一张像下面这样的电子表格来对您的部署进行规划。您可以根据该电子表格修改部署清单。
 
-|Resource Pool|	Size   |VM Configuration   |Job  |
-|-------------|--------|-------------------|-----|
-|small	|3	|RAM：512 MB；CPU：1 个；磁盘：2 GB	|nats、redis、health_monitor|
-|medium	|2	|RAM：1 GB；CPU：1 个；磁盘：8 GB	|postgres、blobstore|
-|director |1	|RAM：2 GB；CPU：2 个；磁盘：8 GB	|director|
+|Resource Pool|	Size   |VM Configuration   |
+|-------------|--------|-------------------|
+|small	|3	|RAM：512 MB；CPU：1 个；磁盘：2 GB	|
+|medium	|2	|RAM：1 GB；CPU：1 个；磁盘：8 GB	|
+|director |1	|RAM：2 GB；CPU：2 个；磁盘：8 GB	|
 
 我们基于上表创建了一个示例部署清单，您可以从这里下载：
 
