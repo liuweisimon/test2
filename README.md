@@ -678,8 +678,9 @@ director UUID 是我们部署的 BOSH Director的 UUID。我们可以通过下�
 
 作业是 Cloud Foundry 的组件。每个作业在一个虚拟机上运行。各个作业的说明如下。
 
-|debian_nfs_server、services_nfs	|这两个作业在 Cloud Foundry 中用作 NFS 服务器。由于它们是文件服务器，因此我们应确保“persistent_disk”属性确实存在。|
+|              |      |
 |-----------------------|---------------------------|
+|debian_nfs_server、services_nfs	|这两个作业在 Cloud Foundry 中用作 NFS 服务器。由于它们是文件服务器，因此我们应确保“persistent_disk”属性确实存在。|
 |syslog_aggregator	|此作业用于收集系统日志并将它们存储在数据库中。|
 |nats	|NATS 是 Cloud Foundry 的消息总线。它是 Cloud Foundry 中的核心组件之一。|
 |opentsdb	|这是用来存储日志信息的数据库。由于它是数据库，因此它也需要“persistent_disk”属性。|
