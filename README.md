@@ -100,10 +100,13 @@ Release：Release包含若干组将要安装到目标系统上的软件代码和
 
 Cloud Foundry 实例的安装过程分为以下四个部分：
 
-		1) 在 Ubuntu 10.04 操作系统中安装 BOSH CLI 工具。此操作系统的主机可以是物理机，也可以是虚拟机。
-		2) 安装Micro BOSH。Micro BOSH是一个包含 BOSH 所有组件的虚拟机。它所具备标准 BOSH 的所有功能。不过，它用来存储多个Release的磁盘空间十分有限。部署Micro BOSH的目的是为了安装 BOSH，因为BOSH 本身就是一个分布式系统。
-		3) 通过Micro BOSH来安装 BOSH。BOSH 通常包含 6 个结点，每个节点部署一个组件。其中一个称作blobstore的节点具有较大的磁盘，可以保存较大的Release。
-		4) 通过 BOSH 安装 Cloud Foundry 实例。
+1) 在 Ubuntu 10.04 操作系统中安装 BOSH CLI 工具。此操作系统的主机可以是物理机，也可以是虚拟机。
+		
+2) 安装Micro BOSH。Micro BOSH是一个包含 BOSH 所有组件的虚拟机。它所具备标准 BOSH 的所有功能。不过，它用来存储多个Release的磁盘空间十分有限。部署Micro BOSH的目的是为了安装 BOSH，因为BOSH 本身就是一个分布式系统。
+		
+3) 通过Micro BOSH来安装 BOSH。BOSH 通常包含 6 个结点，每个节点部署一个组件。其中一个称作blobstore的节点具有较大的磁盘，可以保存较大的Release。
+		
+4) 通过 BOSH 安装 Cloud Foundry 实例。
 
 ###重要前提条件：###
 
@@ -517,7 +520,7 @@ cloud_properties：name 是我们在 vSphere 中定义的网络名称（见第 I
 
 最好填写一张像下面这样的电子表格来对您的部署进行规划。您可以根据该电子表格修改部署清单。
 
-|作业	|资源池	|IP|
+|作业    |资源池   |IP  |
 |-------|-------|--|
 |nats	|small	|10.60.98.120|
 |postgres	|medium	|10.60.98.119|
@@ -651,7 +654,7 @@ $ bosh deploy
 
 根据上面两个表，我们可以修改清单文件。
 
-我们将清单文件命名为cf.yml。以下各节详细说明了其中的字段。 完整的Cloud Foundry部署yml文件，请参考：https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml（注，此yml文件是用来为Cloud Foundry的BOSH部署提供配置信息，与之前介绍的BOSH yml文件不同）
+我们将清单文件命名为cf.yml。以下各节详细说明了其中的字段。 完整的Cloud Foundry部署yml文件，请参考：[https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml](https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml)（注，此yml文件是用来为Cloud Foundry的BOSH部署提供配置信息，与之前介绍的BOSH yml文件不同）
 
 **name**
 
@@ -675,8 +678,8 @@ director UUID 是我们部署的 BOSH Director的 UUID。我们可以通过下�
 
 作业是 Cloud Foundry 的组件。每个作业在一个虚拟机上运行。各个作业的说明如下。
 
-|-----------------------|---------------------------|
 |debian_nfs_server、services_nfs	|这两个作业在 Cloud Foundry 中用作 NFS 服务器。由于它们是文件服务器，因此我们应确保“persistent_disk”属性确实存在。|
+|-----------------------|---------------------------|
 |syslog_aggregator	|此作业用于收集系统日志并将它们存储在数据库中。|
 |nats	|NATS 是 Cloud Foundry 的消息总线。它是 Cloud Foundry 中的核心组件之一。|
 |opentsdb	|这是用来存储日志信息的数据库。由于它是数据库，因此它也需要“persistent_disk”属性。|
@@ -701,7 +704,7 @@ director UUID 是我们部署的 BOSH Director的 UUID。我们可以通过下�
 
 domain：这是供用户访问的域的名称。我们还应创建一个 DNS 服务器来将该域解析为负载均衡器的 IP 地址。在我们的示例中，我们将域名设置为cf.local，以便用户在推送应用程序时可以使用vmc target api.cf.local。
 
-cc.srv_api_uri：此属性通常采用以下格式：**http://api.<您的域名>**。例如，如果我们将域设置为cf.local，那么srv_api_uri将为 **http://api.cf.local**。
+cc.srv_api_uri：此属性通常采用以下格式：`http://api.<您的域名>`。例如，如果我们将域设置为cf.local，那么srv_api_uri将为 `http://api.cf.local`。
 
 cc.password：此密码必须包含至少 16 个字符。
 
