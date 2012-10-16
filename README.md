@@ -4,9 +4,9 @@
 
 Cloud Foundry 是业界首款开源 PaaS。它支持多种框架、多项服务和多家云提供商。BOSH 原本是在 Cloud Foundry 项目的背景下产生的。不过，它已成为一个通用的工具链，用于对大规模的分布式服务进行部署和生命周期管理。
 
-Cloud Foundry 包含多个组件。其中最重要的组件是 Cloud Controller、NATS、Router、 HealthMonitor 和 DEA。可通过下面的链接可找到对这些组件的介绍：[《开源 PaaS Cloud Foundry 深度解析》](http://cnblog.cloudfoundry.com/?p=46)和[《新版Cloud Foundry揭秘》](http://cnblog.cloudfoundry.com/?p=31)。这些组件的设计可以使系统能水平的扩展。也就是说，一个Cloud Foundry 实例可以包含每个组件的一份或多份副本，以满足云所需的负载。这些组件可以分散地部署在多个节点上。
+Cloud Foundry 包含多个组件。其中最重要的组件是 Cloud Controller、NATS、Router、 HealthMonitor 和 DEA。可通过下面的链接可找到对这些组件的介绍：《开源 PaaS Cloud Foundry 深度解析》[http://cnblog.cloudfoundry.com/?p=46](http://cnblog.cloudfoundry.com/?p=46)和《新版Cloud Foundry揭秘》[http://cnblog.cloudfoundry.com/?p=31](http://cnblog.cloudfoundry.com/?p=31)。这些组件的设计可以使系统能水平的扩展。也就是说，一个Cloud Foundry 实例可以包含每个组件的一份或多份副本，以满足云所需的负载。这些组件可以分散地部署在多个节点上。
 
-BOSH 是一款供我们用来将 Cloud Foundry 组件部署到分布式节点上的工具。（ 在虚拟化环境中， “节点”一词可以与“虚拟机”或 VM 互换使用）。在开始详细阐述真实部署前，我们先来简要介绍一下 BOSH 自动化部署系统的工作原理。我们建议您阅读下面的 BOSH 官方文档。https://github.com/cloudfoundry/oss-docs/blob/master/bosh/documentation/documentation.md，文档的中文翻译可以在这里获得，http://cndocs.cloudfoundry.com/deploy/bosh-docs.html。
+BOSH 是一款供我们用来将 Cloud Foundry 组件部署到分布式节点上的工具。（在虚拟化环境中， “节点”一词可以与“虚拟机”或 VM 互换使用）。在开始详细阐述真实部署前，我们先来简要介绍一下 BOSH 自动化部署系统的工作原理。我们建议您阅读下面的 BOSH 官方文档。[https://github.com/cloudfoundry/oss-docs/blob/master/bosh/documentation/documentation.md](https://github.com/cloudfoundry/oss-docs/blob/master/bosh/documentation/documentation.md)，文档的中文翻译可以在这里获得，[http://cndocs.cloudfoundry.com/deploy/bosh-docs.html](http://cndocs.cloudfoundry.com/deploy/bosh-docs.html)。
 
 BOSH 是 Bosh OutterSHell（Bosh 外壳）的递归缩写词。相对于“外壳”（Outter Shell），由 BOSH 部署和管理的系统则称作“内壳”（Inner Shell）。下图显示了一个简化的 BOSH 模型。
 
