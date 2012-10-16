@@ -20,11 +20,15 @@ Release：Release包含若干组将要安装到目标系统上的软件代码和
 
 当上述 3 项内容都准备好后，BOSH CLI 工具会将它们上传到 BOSH。接着，用BOSH 来安装分布式系统包括以下主要步骤：
 
-		1) 如果Release中的某些包需要编译，BOSH 首先会创建几个临时虚拟机（worker，工作者虚拟机）来编译它们。编译完后，BOSH 便会销毁这些工作者虚拟机，将所产生的二进制代码存储在其内部blobstore中。
-		2) BOSH 创建一个虚拟机池，池中的虚拟机将成为该Release要部署到的节点。这些虚拟机是从装有 BOSH 代理的stemcell克隆而来的。BOSH使用CPI接口调用vSphere的虚拟机创建操作API，来自动化的完成虚拟机的创建和配置工作。CPI接口同样适合于OpenStack、AWS等其他IaaS管理平台。
-		3) 对于该Release的每个作业，BOSH 会从该池中选取一个虚拟机，然后根据部署清单更新该虚拟机的配置。具体的配置可以包括 IP 地址、持久磁盘的大小等。
-		4) 重新配置完该虚拟机后，BOSH 会向每个虚拟机内的代理发送命令。这些命令通知该代理安装软件包。在安装期间，该代理可能会从 BOSH 下载包并安装它们。安装完毕后，该代理会运行启动脚本来启动该虚拟机的作业。
-		5) BOSH 重复执行第 3 步至第 4 步，直至所有作业都部署完毕并启动为止。这些作业可以同时部署，也可以按顺序部署。清单文件中的“max_in_flight”值用于控制并行部署的作业数。当该值为 1 时，表示这些作业逐一按顺序部署。对于较慢的系统，该值有助于避免因资源拥塞而造成的超时。该值大于 1 时，表示这些作业可以并行部署。
+1) 如果Release中的某些包需要编译，BOSH 首先会创建几个临时虚拟机（worker，工作者虚拟机）来编译它们。编译完后，BOSH 便会销毁这些工作者虚拟机，将所产生的二进制代码存储在其内部blobstore中。
+		
+2) BOSH 创建一个虚拟机池，池中的虚拟机将成为该Release要部署到的节点。这些虚拟机是从装有 BOSH 代理的stemcell克隆而来的。BOSH使用CPI接口调用vSphere的虚拟机创建操作API，来自动化的完成虚拟机的创建和配置工作。CPI接口同样适合于OpenStack、AWS等其他IaaS管理平台。
+		
+3) 对于该Release的每个作业，BOSH 会从该池中选取一个虚拟机，然后根据部署清单更新该虚拟机的配置。具体的配置可以包括 IP 地址、持久磁盘的大小等。
+		
+4) 重新配置完该虚拟机后，BOSH 会向每个虚拟机内的代理发送命令。这些命令通知该代理安装软件包。在安装期间，该代理可能会从 BOSH 下载包并安装它们。安装完毕后，该代理会运行启动脚本来启动该虚拟机的作业。
+		
+5) BOSH 重复执行第 3 步至第 4 步，直至所有作业都部署完毕并启动为止。这些作业可以同时部署，也可以按顺序部署。清单文件中的“max_in_flight”值用于控制并行部署的作业数。当该值为 1 时，表示这些作业逐一按顺序部署。对于较慢的系统，该值有助于避免因资源拥塞而造成的超时。该值大于 1 时，表示这些作业可以并行部署。
 
 #在vSphere上部署（deploy/vSphere.MD）#
 
@@ -44,41 +48,7 @@ Release：Release包含若干组将要安装到目标系统上的软件代码和
 
 #准备IaaS环境（deploy/vSphere-IaaS.html）#
 
-用BOSH部署 Cloud Foundry 的完全手册
-
-VMWare中国研发中心
-
-Henry Zhang、Victor Chen、Wei Chen
-
-##第I 部分##
-
-###概述###
-
-Cloud Foundry 是业界首款开源 PaaS。它支持多种框架、多项服务和多家云提供商。BOSH 原本是在 Cloud Foundry 项目的背景下产生的。不过，它已成为一个通用的工具链，用于对大规模的分布式服务进行部署和生命周期管理。本系列由 4 部分组成，将一步步地向您介绍使用 BOSH安装 Cloud Foundry 平台的过程。
-
-Cloud Foundry 包含多个组件。其中最重要的组件是云控制器、NATS、router、运行 状况管理器和 DEA。可通过下面的链接可找到对这些组件的介绍：http://blog.cloudfoundry.com/2011/04/19/cloud-foundry-open-paas-deep-dive/。这些组件的设计可以使系统能水平的扩展。也就是说，一个Cloud Foundry 实例可以包含每个组件的一份或多份副本，以满足云所需的负载。这些组件可以分散地部署在多个节点上。
-
-BOSH 是一款供我们用来将 Cloud Foundry 组件部署到分布式节点上的工具。（ 在虚拟化环境中，“节点”一词可以与“虚拟机”或 VM 互换使用）。在开始详细阐述真实部署前，我们先来简要介绍一下 BOSH 自动化部署系统的工作原理。我们建议您阅读下面的 BOSH 官方文档。()
-
-BOSH 是 Bosh Outter SHell（Bosh 外壳）的递归缩写词。相对于“外壳”，由 BOSH 部署和管理的系统则称作“内壳”（Inner Shell）。下图显示了一个简化的 BOSH 模型。
-
-可以将 BOSH 视作一台负责协调分布式系统部署过程的服务器或机器人。有个Ruby 工具可以与 BOSH 命令行界面 (CLI) 进行交互。BOSH 需要以下三个必备项才能开始部署系统：一个 stemcell、一个Release（要安装的软件）和一个部署清单(Deployment Manifest)。我们来更详细地了解一下这三项内容。
-
-Stemcell：在云平台中，虚拟机通常是从模板克隆而来的。一个 stemcell 就是一个包含标准 Ubuntu  Linux的虚拟机模板。该模板中还嵌入了一个 BOSH 代理，以便 BOSH 可以控制从该 stemcell 克隆出来的虚拟机。“stemcell”这个名字源自于“stem cell”（干细胞）这个生物学术语，该术语指的是能够生成各种细胞的未分化细胞。同样，一个 BOSH stemcell 所创建的各个虚拟机起初也是完全相同的。初始化后，这些虚拟机便配置了不同的 CPU/内存/存储/网络，并装有不同的软件包。因此，基于同一stemcell 模板构建的虚拟机会表现出不同的行为。
-
-Release：Release包含若干组将要安装到目标系统上的软件代码和配置。每个虚拟机上都要部署一组软件，这组软件称作一个作业(job)。配置通常是包含诸如 IP 地址、端口号、用户名、密码、域名等参数的模板。这些参数在部署时将被部署清单文件中定义的属性所替代。
-
-部署：部署就是使静态的Release变成虚拟机上可运行的软件的过程。部署清单定义了部署所需的实际参数值。在部署过程中，BOSH 会替换掉Release中的参数，从而使软件按照我们规划的配置来运行。
-
-当上述 3 项内容都准备好后，BOSH CLI 工具会将它们上传到 BOSH。接着，用BOSH 来安装分布式系统包括以下主要步骤：
-
-		1) 如果Release中的某些包需要编译，BOSH 首先会创建几个临时虚拟机（worker,工作者虚拟机）来编译它们。编译完后，BOSH 便会销毁这些工作者虚拟机，将所产生的二进制代码存储在其内部 blobstore 中。
-		2) BOSH 创建一个虚拟机池，池中的虚拟机将成为该Release要部署到的节点。这些虚拟机是从装有 BOSH 代理的 stemcell 克隆而来的。
-		3) 对于该Release的每个作业，BOSH 会从该池中选取一个虚拟机，然后根据部署清单更新该虚拟机的配置。具体的配置可以包括 IP 地址、持久磁盘的大小等。
-		4) 重新配置完该虚拟机后，BOSH 会向每个虚拟机内的代理发送命令。这些命令通知该代理安装软件包。在安装期间，该代理可能会从 BOSH 下载包并安装它们。安装完毕后，该代理会运行启动脚本来启动该虚拟机的作业。
-		5) BOSH 重复执行第 3 步至第 4 步，直至所有作业都部署完毕并启动为止。这些作业可以同时部署，也可以按顺序部署。清单文件中的“max_in_flight”值用于控制并行部署的作业数。当该值为 1 时，表示这些作业逐一按顺序部署。对于较慢的系统，该值有助于避免因资源拥塞而造成的超时。该值大于 1 时，表示这些作业可以并行部署。
-
-我们将在后文中对上述步骤进行详细解释。开始安装部署前，我们先讨论一下硬件和软件方面的前提条件。
+开始部署前，我们先讨论一下硬件和软件方面的前提条件。
 
 ###软件：###
 
@@ -100,13 +70,12 @@ Release：Release包含若干组将要安装到目标系统上的软件代码和
 |Micro BOSH|	1   |	Ubuntu |不可以|
 |BOSH|	6  |	Ubuntu|	不可以|
 |Cloud Foundry|	34   |	Ubuntu|	不可以，见下文|
-|-------|-----------|-----------|------------|
 |合计：|	43| | |	 	 
 
 注意：上表中 Cloud Foundry 的节点数目是所需的最少节点数目。此数目可能会因实际的 Cloud Foundry 部署规模而异。选择硬件配置时通常要考虑两个原则：
 
 		1) vCPU总数不应超过物理核心总数的两倍。在生产系统中，两者之比应该接近于 1。
-		2) 所有虚拟机的总内存应小于所有hHypervisor的物理内存。
+		2) 所有虚拟机的总内存应小于所有Hypervisor的物理内存。
 
 下面例子是假设每个虚拟机有 4 GB 内存和 1 个vCPU时的硬件配置：
 
@@ -118,13 +87,13 @@ Release：Release包含若干组将要安装到目标系统上的软件代码和
 
 对于生产环境，我们建议选择CPU核数和内存容量都比较大的机型，这样在同一台物理机，可以运行更多的虚拟机。同时需要考虑有比较高吞吐量的网卡和存储设备。
 
-除了服务器之外，存储也是云平台中的一个关键要素。存储最好应有 200 GB 或更大的可用空间，以便保存所有虚拟机的映像。在生产系统中，建议采用快速的共享存储。NFS 是用来在hHypervisor间共享存储的最常用协议。在试验环境中，可以使用基于 Linux 的 NFS 服务器来代替专用存储。尽管hHypervisor中的本地磁盘在POC 测试型环境中可以使用，但通常不建议将本地磁盘用于生产系统中。
+除了服务器之外，存储也是云平台中的一个关键要素。存储最好应有 200 GB 或更大的可用空间，以便保存所有虚拟机的映像。在生产系统中，建议采用快速的共享存储。NFS 是用来在Hypervisor间共享存储的最常用协议。在试验环境中，可以使用基于 Linux 的 NFS 服务器来代替专用存储。尽管Hypervisor中的本地磁盘在 测试环境中可以使用，但通常不建议将本地磁盘用于生产系统中。
 
-我们最后应规划的是网络。在实验室环境中，我们可以直接将所有节点都放在同一网络中。不过，在生产系统中，出于安全和管理需要，应将 Cloud Foundry 的各个组件正确分配到VLAN中。在本系列文章中，我们不讨论网络连接方面的细节。作为例子，我们在部署期间将采用四个VLAN：
+我们最后应规划的是网络。在实验室环境中，我们可以直接将所有节点都放在同一网络中。不过，在生产系统中，出于安全和管理需要，应将 Cloud Foundry 的各个组件正确分配到VLAN中。在本文中，我们不讨论网络连接方面的细节。作为例子，我们在部署期间将采用四个VLAN：
 
 |VLAN      |节点       |
 |----------|-----------|
-|Management VLAN |hHypervisor和 NFS 存储|
+|Management VLAN |Hypervisor和 NFS 存储|
 |CF VLAN |BOSH 虚拟机以及 Cloud Foundry 的虚拟机|
 |Service VLAN |LB ，双宿 (Dual-Homed) router|
 |Public VLAN |LB，外网请求|
@@ -136,12 +105,9 @@ Cloud Foundry 实例的安装过程分为以下四个部分：
 		3) 通过Micro BOSH来安装 BOSH。BOSH 通常包含 6 个结点，每个节点部署一个组件。其中一个称作blobstore的节点具有较大的磁盘，可以保存较大的Release。
 		4) 通过 BOSH 安装 Cloud Foundry 实例。
 
-##第 II 部分##
-
-###安装 BOSH CLI###
-
 ###重要前提条件：###
-在 BOSH 和 Cloud Foundry 的整个安装过程中，都需要直接的 Internet 连接。这一点非常重要，因为部分软件代码是直接从 Internet 下载的，例如 Ruby gGem 以及一些开源软件。在虚拟机与 Internet 之间设置 Web 代理服务器将导致安装失败。注：NAT是允许的。
+
+在 BOSH 和 Cloud Foundry 的整个安装过程中，都需要直接的 Internet 连接。这一点非常重要，因为部分软件代码是直接从 Internet 下载的，例如 Ruby Gem 以及一些开源软件。在虚拟机与 Internet 之间设置 Web 代理服务器将导致安装失败。注：NAT是允许的。
 
 另一项前提条件是要有稳定的 Internet 连接。如果您的网络在从 Internet 下载文件时速度缓慢或者不可靠，安装可能会因出现超时或连接错误而失败。
 
@@ -149,11 +115,11 @@ Cloud Foundry 实例的安装过程分为以下四个部分：
 
 ###在 vCenter 中创建一个群集###
 
-假定所有节点都是虚拟机，那么我们首先在所有裸机服务器上安装 vSphere（在本篇文章中我们采用 V5.x）。各 vSphere 服务器通过Management VLAN相连。安装完毕后，我们需在其中一个Hhypervisor上创建一个虚拟机以安装 64 位 Windows 2008 R2。随后，我们需在此 Windows 2008 虚拟机上安装 vCenter。下一步是使用 vSphere Client 连接到 vCenter，以便我们可以管理这些服务器。
+假定所有节点都是虚拟机，那么我们首先在所有裸机服务器上安装 vSphere（在本篇文章中我们采用 V5.x）。各 vSphere 服务器通过Management VLAN相连。安装完毕后，我们需在其中一个Hypervisor上创建一个虚拟机以安装 64 位 Windows 2008 R2。随后，我们需在此 Windows 2008 虚拟机上安装 vCenter。下一步是使用 vSphere Client 连接到 vCenter，以便我们可以管理这些服务器。
 
-有关vSphere，vCenter和vSphere Client的安装使用细节，请参考VMware官方网站中的文档介绍http://www.vmware.com/cn/products/
+有关vSphere，vCenter和vSphere Client的安装使用细节，请参考VMware官方网站中的文档介绍 [http://www.vmware.com/cn/products/](http://www.vmware.com/cn/products/)
 
-我们可以在任意 Windows机器（甚至是虚拟机）上安装 vSphere Client。之后，我们便可以通过 vSphere Client 以远程方式连接到 vCenter。首先，我们来在 vCenter 中创建一个数据中心。为此，请右键单击左窗格中的 vCenter 节点，然后选择““新建数据中心””(（New Datacenter)）以添加一个新的数据中心。
+我们可以在任意 Windows机器（甚至是虚拟机）上安装 vSphere Client。之后，我们便可以通过 vSphere Client 以远程方式连接到 vCenter。首先，我们来在 vCenter 中创建一个数据中心。为此，请右键单击左窗格中的 vCenter 节点，然后选择“新建数据中心”（New Datacenter）以添加一个新的数据中心。
 
 接下来，请右键单击新创建的数据中心节点，然后选择“新建群集...”(New Cluster...)。
 
@@ -216,7 +182,9 @@ Cloud Foundry 的虚拟机将部署到一个或多个网络中。在部署前，
 从 vCenter 中，我们选择该群集中的主机之一来创建一个虚拟机。为此，请单击“创建新虚拟机”(Create a new virtual machine)。我们将在此虚拟机上安装 64 位 Ubuntu 10.04 操作系统。为此虚拟机分配 2 个虚拟 CPU、2 GB 内存、20 GB 磁盘空间（或者更多）。在安装期间，一定要手动设置网络。
 
 我们现在开始在该虚拟机上安装 BOSH CLI。为此，请登录到 Ubuntu，然后遵照以下步骤操作。（请注意，这些步骤大都摘自 BOSH 官方文档。为了您方便起见，在此将它们列出来。）
+
 1.通过 rbenv 安装 Ruby：
+
 		1.BOSH 是用 Ruby 编写的。我们来安装 Ruby 的依赖项：
 		`$ sudo apt-get install git-core build-essential libsqlite3-dev curl libmysqlclient-dev libxml2-dev libxslt-devlibpq-devgenisoimage`
 		2.获取最新版本的rbenv
@@ -247,7 +215,8 @@ Cloud Foundry 的虚拟机将部署到一个或多个网络中。在部署前，
 		`$ gem install bundler`
 		`$ rbenv rehash`
 
-1.安装 BOSH CLI：
+2.安装 BOSH CLI：
+
 		1.在http://reviews.cloudfoundry.org注册 Cloud Foundry Gerrit服务器
 		2.设置您的ssh公钥（接受所有默认值）：
 		`$ ssh-keygen –t rsa`
@@ -265,13 +234,12 @@ Cloud Foundry 的虚拟机将部署到一个或多个网络中。在部署前，
 
 如果一切运行顺利，最后一个命令将会显示您刚刚创建的 BOSH 版本。这表明 BOSH CLI 已安装成功。
 
-##第 III 部分##
-
-###安装Micro BOSH和 BOSH（deploy/vSphere-BOSH.MD）###
+###安装 BOSH（deploy/vSphere-BOSH.MD）###
 
 BOSH CLI 安装完毕后，我们现在便开始安装Micro BOSH。如前文所述，可以将Micro BOSH视作袖珍版的 BOSH。尽管标准的 BOSH各个组件分布在 6 个虚拟机上 ，但Micro BOSH却恰恰相反，它在单个虚拟机中包含了所有组件。它可以轻易的设置，通常用于部署小型的Release，如 BOSH。从这个意义上讲，BOSH 是自部署的。用 BOSH 团队的话说，这叫做“Inception”。
 
 以下步骤是通过在 BOSH 官方文档基础上添加更多操作细节改编成的。
+
 1.在 BOSH CLI 虚拟机中，安装 BOSH 部署器 ruby gem。
 
 `$ gem install bosh_deployer`
@@ -349,7 +317,7 @@ $ cd ~
 
 下面是Micro BOSH的一个示例yml文件的链接：
 
-https://github.com/vmware-china-se/bosh_doc/blob/master/micro.yml
+[https://github.com/vmware-china-se/bosh_doc/blob/master/micro.yml](https://github.com/vmware-china-se/bosh_doc/blob/master/micro.yml)
 
 6.使用以下命令设置此Micro BOSH部署：
 
@@ -358,7 +326,7 @@ https://github.com/vmware-china-se/bosh_doc/blob/master/micro.yml
 $ bosh micro deployment micro01
 ```
 
-部署设置为“~/deployments/micro01/micro_bosh.yml”	部署设置为“~/deployments/micro01/micro_bosh.yml”
+		部署设置为“~/deployments/micro01/micro_bosh.yml”
 
 `$ bosh micro deploy ~/stemcells/micro-bosh-stemcell-0.1.0.tgz`
 
@@ -378,14 +346,14 @@ $ bosh micro deployment micro01
 
 Micro BOSH准备就绪后，我们就可用它来部署 BOSH。BOSH 是一个包含 6 个虚机的分布式系统。正如上一节所提到的那样，我们需要有三项内容：一个作为虚拟机模板的stemcell、一个作为待部署软件的 BOSH Release，以及一个用来定义部署配置的部署清单文件。我们来逐一准备。
 
-1.首先，我们将 BOSH CLI 的目标设为Micro BOSH的dDirector。可以将 BOSH diDirector视作 BOSH 的控制者或协调者。所有 BOSH CLI 命令均发往该dDirector加以执行。该dDirector的 IP 地址在我们用来创建Micro BOSH的 yml 文件中定义。BOSH dDirector的默认用户/密码为 admin/admin。在我们的示例中，我们使用下面的命令来设定Micro BOSH的目标和进行身份验证：
+1)首先，我们将 BOSH CLI 的目标设为Micro BOSH的Director。可以将 BOSH Director视作 BOSH 的控制者或协调者。所有 BOSH CLI 命令均发往该Director加以执行。该Director的 IP 地址在我们用来创建Micro BOSH的 yml 文件中定义。BOSH Director的默认用户/密码为 admin/admin。在我们的示例中，我们使用下面的命令来设定Micro BOSH的目标和进行身份验证：
 
 ```
  $ bosh target 10.60.98.124:25555
 $ bosh login
 ```
 
-1.接下来，我们下载 BOSH stemcell并将其上传到Micro BOSH。这一步与下载Micro BOSH的 stemcell 类似。唯一的差别在于，我们选择的是 BOSH 而非Micro BOSH的stemcell。
+2)接下来，我们下载 BOSH stemcell并将其上传到Micro BOSH。这一步与下载Micro BOSH的 stemcell 类似。唯一的差别在于，我们选择的是 BOSH 而非Micro BOSH的stemcell。
 
 ```
 $ cd ~/stemcells
@@ -401,26 +369,26 @@ $ bosh download public stemcell bosh-stemcell-vsphere-0.6.4.tgz
 
 如果您已在第 II 部分中创建了Gerrit帐户，请跳过第 3 步至第 7 步。
 
-1.在以下位置注册 Cloud Foundry Gerrit服务器：http://reviews.cloudfoundry.org
+3)在以下位置注册 Cloud Foundry Gerrit服务器：[http://reviews.cloudfoundry.org](http://reviews.cloudfoundry.org)
 
-1.设置您的 ssh 公钥（接受所有默认值）
+4)设置您的 ssh 公钥（接受所有默认值）
 
 `$ ssh-keygen -t rsa`
 
 将您的密钥从 ~/.ssh/id_rsa.pub 复制到您的Gerrit帐户中
 
-1.在您的Gerrit帐户配置文件中创建并上传自己的 SSH 公钥
+5)在您的Gerrit帐户配置文件中创建并上传自己的 SSH 公钥
 
-1.设置您的姓名和电子邮件
+6)设置您的姓名和电子邮件
 
 ```
 $ git config --global user.name "FirstnameLastname"
 $ gitconfig --global user.emailyour_email@youremail.com
 ```
 
-1.安装gerrit-cli gem
+7)安装gerrit-cli gem
 
-1.使用Gerrit从 Cloud Foundry 代码库中克隆Release代码。以下命令分别获取 BOSH 和 Cloud Foundry 的代码。
+8)使用Gerrit从 Cloud Foundry 代码库中克隆Release代码。以下命令分别获取 BOSH 和 Cloud Foundry 的代码。
 
 ```
 $ gerrit clone ssh://<yourusername>@reviews.cloudfoundry.org:29418/bosh.git 
@@ -478,11 +446,11 @@ $ bosh create release  --with-tarball
 		Release manifest:/home/boshcli/bosh-release/dev_releases/bosh-dev1-6.1-dev.yml
 		Release tarball (88.8M):/home/boshcli/bosh-release/dev_releases/bosh-dev1-6.1-dev.tgz
 
-1.将创建好的Release上传到Micro BOSH的director。
+9)将创建好的Release上传到Micro BOSH的director。
 
 `$ bosh upload release dev_releases/bosh-dev1-6.1-dev.tgz `
 
-1.配置 BOSH 部署清单。首先，我们通过执行以下命令获取该director的 UUID 信息：
+10)配置 BOSH 部署清单。首先，我们通过执行以下命令获取该director的 UUID 信息：
 
 `$ bosh status`
 
@@ -523,7 +491,7 @@ reserved：BOSH 不应使用的 IP 地址。请务必要排除所有已经分配
 
 cloud_properties：name 是我们在 vSphere 中定义的网络名称（见第 II 部分）。
 
-**Resource Pool (资源池)（resource_pools）**
+**资源池（resource_pools）**
 
 此节定义作业使用的虚拟机配置（CPU、内存、磁盘和网络）。通常，应用程序的各个作业在资源使用方面各异。例如，有些作业需要较多的内存量，而有些作业则需要更多的vCPU来执行计算密集型任务。根据实际需要，我们应创建一个或多个资源池。需要注意的是，所有池的总规模应等于在清单文件中定义的作业实例的总数。部署 BOSH 时，由于总共有 6 个虚拟机（6 个作业），因此所有池的规模加起来应等于 6。
 
@@ -560,9 +528,9 @@ cloud_properties：name 是我们在 vSphere 中定义的网络名称（见第 I
 
 我们基于上表创建了一个示例部署清单，您可以从这里下载：
 
-https://github.com/vmware-china-se/bosh_doc/blob/master/bosh.yml
+[https://github.com/vmware-china-se/bosh_doc/blob/master/bosh.yml](https://github.com/vmware-china-se/bosh_doc/blob/master/bosh.yml)
 
-1.更新完部署清单文件后，我们便可以通过运行以下命令开始实际部署：
+11)更新完部署清单文件后，我们便可以通过运行以下命令开始实际部署：
 
 ```
 $ bosh deployment bosh_dev1.yml
@@ -603,7 +571,7 @@ $ bosh deploy
     
 这表示您已成功部署 BOSH。您可以通过执行下面的命令来查看您的部署：
 
-$ bosh deployments
+`$ bosh deployments`
 
 		+-------+
 		| Name  |
@@ -629,11 +597,9 @@ $ bosh deployments
 		+------------------+---------+---------------+--------------+
 		VMs total: 6
 
-##第 IV 部分##
-
 ###安装部署 Cloud Foundry（/deploy/vSphere-CF.MD）###
 
-在前面的文章中，我们安装了Micro BOSH和 BOSH。如果一切顺利，我们准备已经为好安装 Cloud Foundry做好准备了。首先，我们为Cloud Foundry的部署制定资源计划。
+在前面的文章中，我们安装了Micro BOSH和 BOSH。如果一切顺利，我们已经为安装 Cloud Foundry做好准备了。首先，我们为Cloud Foundry的部署制定资源计划。
 
 在我们编写本文时，完整的 Cloud Foundry 安装包含大约 34 个不同作业（虚拟机）。其中有些作业为核心组件，必须安装至少一个这类作业的实例；例如，Cloud Controller、NATS 和 DEA 等。有些作业应具有多个实例，具体取决于实际需求；例如 DEA 和router等。有些作业是可选的，例如服务网关和服务节点。因此，我们在安装 Cloud Foundry 前，应决定将哪些组件纳入部署范围。我们制定了要部署的组件的清单后，便可以规划每个作业所需的资源。通常，这些资源包括 IP 地址、CPU、内存和存储。下面是一个部署计划示例。
 
@@ -673,7 +639,6 @@ $ bosh deployments
 |opentsdb	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
 |collector	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
 |dashboard	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
-|-------|-------|-------|-------|-------|---------------|--------------|
 |合计：	|36	|	|39 GB	|40	|320	| |
 
 根据上表，我们便可以确定所需的资源池：
@@ -694,7 +659,7 @@ $ bosh deployments
 
 **director_uuid**
 
-director UUID 是我们刚刚在第 III 部分中部署的 BOSH dDirector的 UUID。我们可以通过下面的命令来检索此值：
+director UUID 是我们部署的 BOSH Director的 UUID。我们可以通过下面的命令来检索此值：
 
 `$ bosh status`
 
@@ -710,6 +675,7 @@ director UUID 是我们刚刚在第 III 部分中部署的 BOSH dDirector的 UUI
 
 作业是 Cloud Foundry 的组件。每个作业在一个虚拟机上运行。各个作业的说明如下。
 
+|-----------------------|---------------------------|
 |debian_nfs_server、services_nfs	|这两个作业在 Cloud Foundry 中用作 NFS 服务器。由于它们是文件服务器，因此我们应确保“persistent_disk”属性确实存在。|
 |syslog_aggregator	|此作业用于收集系统日志并将它们存储在数据库中。|
 |nats	|NATS 是 Cloud Foundry 的消息总线。它是 Cloud Foundry 中的核心组件之一。|
@@ -735,7 +701,7 @@ director UUID 是我们刚刚在第 III 部分中部署的 BOSH dDirector的 UUI
 
 domain：这是供用户访问的域的名称。我们还应创建一个 DNS 服务器来将该域解析为负载均衡器的 IP 地址。在我们的示例中，我们将域名设置为cf.local，以便用户在推送应用程序时可以使用vmc target api.cf.local。
 
-cc.srv_api_uri：此属性通常采用以下格式：http://api.<您的域名>。例如，如果我们将域设置为cf.local，那么srv_api_uri将为 http://api.cf.local。
+cc.srv_api_uri：此属性通常采用以下格式：**http://api.<您的域名>**。例如，如果我们将域设置为cf.local，那么srv_api_uri将为 **http://api.cf.local**。
 
 cc.password：此密码必须包含至少 16 个字符。
 
@@ -761,11 +727,11 @@ mysql_node.production：如果它为 True，则mysql_node的内存必须至少�
 
 您可以从以下位置下载部署Cloud Foundry的示例yml文件：
 
-https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml
+[https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml](https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml)
 
 此清单文件完成后，我们就可以开始安装 Cloud Foundry 了。
 
-1) 在之前的步骤中第 III 部分中，我们已经通过以下命令从Gerrit克隆了 CF 代码库：
+1) 在之前的步骤中，我们已经通过以下命令从Gerrit克隆了 CF 代码库：
 
 `$ gerrit clone ssh://<your username>@reviews.cloudfoundry.org:29418/cf-release.git`
 
@@ -779,6 +745,7 @@ $ bosh create release
 这将下载部署所需的所有包、blob 数据及其他资源。下载过程将耗费若干分钟，主要取决于网络速度。
 
 **注意：**
+
 1.如果您编辑了 CF Release中的代码，那么您可能需要在命令 bosh create release 中添加 --force 选项。
 
 2.在运行此命令时系统一定要直接连接Internet。
@@ -927,13 +894,13 @@ $ bosh create release
 
 如果上述测试顺利通过，则说明您的 Cloud Foundry 实例正常工作。最后要做的是部署负载均衡器和 DNS服务。它们不属于 Cloud Foundry 的组件，但在生产环境中往往需要正确地设置它们。我们简要地介绍一下如何设置。
 
-您可以部署一个硬件或软件负载均衡器 (LB) 来均匀地向多个router实例分配负载。在我们的示例部署中，我们有两个router。对于软件 LB，您可以使用Stingray 流量管理器。可从以下位置下载该软件：https://support.riverbed.com/download.htm?filename=public/software/stingray/trafficmanager/9.0/ZeusTM_90_Linux-x86_64.tgz
+您可以部署一个硬件或软件负载均衡器 (LB) 来均匀地向多个router实例分配负载。在我们的示例部署中，我们有两个router。对于软件 LB，您可以使用Stingray 流量管理器。可从以下位置下载该软件：[https://support.riverbed.com/download.htm?filename=public/software/stingray/trafficmanager/9.0/ZeusTM_90_Linux-x86_64.tgz](https://support.riverbed.com/download.htm?filename=public/software/stingray/trafficmanager/9.0/ZeusTM_90_Linux-x86_64.tgz)
 
 要解析 Cloud Foundry 实例所属的域名，需要有 DNS 服务器。基本而言，DNS 服务器会将像 *.yourdomain.com 这样带通配符的域名解析为负载均衡器的 IP 地址。如果您没有 LB，您可以设置 DNS Rotation，从而以循环方式将域解析为各个router的地址。
 
 LB 和 DNS 设置妥善后，您便可以开始在您的实例上部署应用程序。
 
-VMC 是使用Cloud Foundry的命令行工具。它可以执行 Cloud Foundry 上的大多数操作，例如配置应用程序、将应用部署到 Cloud Foundry 以及监控应用程序的状态。要安装 VMC，需要先安装 Ruby 和RubyGems（ Ruby Gem管理器）。目前支持 Ruby 1.8.7 和 1.9.2。接着，您可以通过下面的命令安装 VMC（有关 VMC 安装的更多信息，请参见http://docs.cloudfoundry.com/tools/vmc/installing-vmc.html）：
+VMC 是使用Cloud Foundry的命令行工具。它可以执行 Cloud Foundry 上的大多数操作，例如配置应用程序、将应用部署到 Cloud Foundry 以及监控应用程序的状态。要安装 VMC，需要先安装 Ruby 和RubyGems（ Ruby Gem管理器）。目前支持 Ruby 1.8.7 和 1.9.2。接着，您可以通过下面的命令安装 VMC（有关 VMC 安装的更多信息，请参见[http://docs.cloudfoundry.com/tools/vmc/installing-vmc.html](http://docs.cloudfoundry.com/tools/vmc/installing-vmc.html)）：
 
 `$ sudo gem install vmc`
 
