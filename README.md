@@ -520,14 +520,11 @@ cloud_properties：name 是我们在 vSphere 中定义的网络名称（见第 I
 
 最好填写一张像下面这样的电子表格来对您的部署进行规划。您可以根据该电子表格修改部署清单。
 
-|-------|-------|--|
-|作业	|资源池	|IP|
-|nats	|small	|10.60.98.120|
-|postgres	|medium	|10.60.98.119|
-|redis	|small	|10.60.98.118|
-|director	|director	|10.60.98.117|
-|blob_store	|medium	|10.60.98.116|
-|health_monitor	|small	|10.60.98.115|
+|Resource Pool|	Size   |VM Configuration   |Job  |
+|-------------|--------|-------------------|-----|
+|small	|3	|RAM：512 MB；CPU：1 个；磁盘：2 GB	|nats、redis、health_monitor|
+|medium	|2	|RAM：1 GB；CPU：1 个；磁盘：8 GB	|postgres、blobstore|
+|director |1	|RAM：2 GB；CPU：2 个；磁盘：8 GB	|director|
 
 我们基于上表创建了一个示例部署清单，您可以从这里下载：
 
@@ -965,3 +962,8 @@ end
 现在，到浏览器中访问该应用程序的 URL：hello.cf.local。如果您可以看到下面的文本，则说明您的应用程序已成功部署。
 
 恭喜！您的 Cloud Foundry 实例已经完全设置好了。它在功能上与 cloudfoundry.com 完全相同。
+
+
+
+
+
