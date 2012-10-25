@@ -66,43 +66,19 @@ IaaS 接口插件通过由诸如 VMware 或 Amazon 等特定 IaaS 供应商提�
 
 这些接口的现有示例的位置如下：
 
-	对于 vSphere，位于 `bosh/vsphere_cpi/lib/cloud/vsphere/cloud.rb` 中；对于 Amazon Web Services，位于 `bosh/aws_cpi/lib/cloud/aws/cloud.rb` 中。
+对于 vSphere，位于 `bosh/vsphere_cpi/lib/cloud/vsphere/cloud.rb` 中；对于 Amazon Web Services，位于 
+
+`bosh/aws_cpi/lib/cloud/aws/cloud.rb` 中。
 
 上述子目录中包含了一些 Ruby 类，这些类包含用来执行以下操作的方法：
 
 
-
-	create
-
-_stemcell / delete
-
-_stemcell
-
-
-	create
-
-_vm  / delete
-
-_vm  / reboot
-
-_vm
-
-
-	configure
-
-_networks
-
-
-	create
-
-_disk / delete
-
-_disk / attach
-
-_disk / detach
-
-_disk
-
+```
+create_stemcell / delete_stemcell
+create_vm  / delete_vm  / reboot_vm
+configure_networks
+create_disk / delete_disk / attach_disk / detach_disk
+```
 
 
 有关对 CPI 基元的进一步说明，请参考这些文件中的 [API 文档](https://github.com/cloudfoundry/bosh/blob/master/cpi/lib/cloud.rb)。
@@ -140,16 +116,11 @@ BOSH 命令行界面是用户使用终端会话与 BOSH 进行交互的途径。
 BOSH 命令采用下面所示的格式：
 
 
-
+```
 $ bosh [--verbose] [--config|-c <FILE>] [--cache-dir <DIR>]
-
-
 [--force] [--no-color] [--skip-director-checks] [--quiet]
-
-
-[--non-interactive
-
-]
+[--non-interactive]
+```
 
 如需了解有关这些选项的更多详情，请[安装](#installing-bosh-command-line-interface) [BOSH 命令行界面](http://rubygems.org/gems/bosh_cli) gem，然后运行 `bosh` 命令。
 
@@ -240,15 +211,11 @@ BOSH 还将该 Blobstore 用作大型有效负载的中间存储区，例如日�
 
 
 
-1. [Atmos
+1. [Atmos](http://www.emc.com/storage/atmos/atmos.htm)
 
-](http://www.emc.com/storage/atmos/atmos.htm)
-1. [S3
+2. [S3](http://aws.amazon.com/s3/)
 
-](http://aws.amazon.com/s3/)
-1. [简单 blobstore 服务器
-
-](https://github.com/cloudfoundry/bosh/tree/master/simple_blobstore_server)
+3. [简单 blobstore 服务器](https://github.com/cloudfoundry/bosh/tree/master/simple_blobstore_server)
 
 有关每种 Blobstore 的示例配置，请参见 [Blob](#blobs) 一节。
 
@@ -296,20 +263,18 @@ BOSH 使用 [NATS](https://github.com/derekcollison/nats) 消息总线来发出�
 ### 通过 rbenv 安装 Ruby ###
 
 
-1. BOSH 是用 Ruby 编写的。
-
-我们来安装 Ruby 的依赖项
+1. BOSH 是用 Ruby 编写的。我们来安装 Ruby 的依赖项
 
 
 
 		sudo apt-get install git-core build-essential libsqlite3-dev curl \
 
 
-	    libmysqlclient-dev libxml2-dev libxslt-dev libpq-dev
+		libmysqlclient-dev libxml2-dev libxslt-dev libpq-dev
 
 
 
-1. 获取最新版本的 rbenv
+2. 获取最新版本的 rbenv
 
 
 
@@ -320,37 +285,32 @@ BOSH 使用 [NATS](https://github.com/derekcollison/nats) 消息总线来发出�
 
 
 
-1. 将 `~/.rbenv/bin` 添加到您的 `$PATH` 以便能够访问 `rbenv` 命令行实用程序
+3. 将 `~/.rbenv/bin` 添加到您的 `$PATH` 以便能够访问 `rbenv` 命令行实用程序
 
 
 
-		echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash
-
-_profile
+		echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
 
 
 
-1. 将 rbenv init 添加到您的 shell 以启用填充程序 (Shim) 和自动完成
+4. 将 rbenv init 添加到您的 shell 以启用填充程序 (Shim) 和自动完成
 
 
 
-		echo 'eval "$(rbenv init -)"' >> ~/.bash
-
-_profile
+		echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
 
 
 
-1. 下载 Ruby 1.9.2
+5. 下载 Ruby 1.9.2
 
 
 
-_注意：
+注意：
 
 您也可以使用适用于 rbenv 的 ruby-build 插件来构建 ruby。
 
 请参见 https://github.com/sstephenson/ruby-build
 
-_
 
 		wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p290.tar.gz
 
@@ -376,17 +336,15 @@ _
 
 
 
-1. 重新启动您的 shell 以使路径更改生效
+2. 重新启动您的 shell 以使路径更改生效
 
 
 
-		source ~/.bash
-
-_profile
+		source ~/.bash_profile
 
 
 
-1. 将您的默认 Ruby 设置为 1.9.2 版本
+3. 将您的默认 Ruby 设置为 1.9.2 版本
 
 
 
@@ -394,11 +352,10 @@ _profile
 
 
 
-_注意：
+注意：
 
 使用此方法时可能需要重新安装 rake 0.8.7 gem
 
-_
 
 		gem pristine rake
 
@@ -407,22 +364,14 @@ _
 1. 更新 rubygem 并安装捆绑包。
 
 
-
-_注意：
+注意：
 
 安装 gem（`gem install` 或 `bundle install`）后，运行 `rbenv rehash` 以添加新的填充程序
 
-_
 
 		rbenv rehash
-
-
 		gem update --system
-
-
 		gem install bundler
-
-
 		rbenv rehash
 
 
@@ -433,7 +382,7 @@ _
 
 
 
-1. 设置您的 ssh 公钥（接受所有默认值）
+2. 设置您的 ssh 公钥（接受所有默认值）
 
 
 
@@ -441,28 +390,24 @@ _
 
 
 
-1. 将您的密钥从 `~/.ssh/id_rsa.pub` 复制到您的 Gerrit 帐户中
+3. 将您的密钥从 `~/.ssh/id_rsa.pub` 复制到您的 Gerrit 帐户中
 
 
 
-1. 在您的 Gerrit 帐户配置文件中创建并上传自己的公共 SSH 密钥
+4. 在您的 Gerrit 帐户配置文件中创建并上传自己的公共 SSH 密钥
 
 
 
-1. 设置您的名称和电子邮件
+5. 设置您的名称和电子邮件
 
 
 
 		git config --global user.name "Firstname Lastname"
-
-
-		git config --global user.email "your
-
-_email@youremail.com"
+		git config --global user.email "your_email@youremail.com"
 
 
 
-1. 安装好 gerrit-cli gem
+6. 安装好 gerrit-cli gem
 
 
 
@@ -470,29 +415,21 @@ _email@youremail.com"
 
 
 
-1. 从 Gerrit 克隆 BOSH 代码库
+7. 从 Gerrit 克隆 BOSH 代码库
 
 
 
 		gerrit clone ssh://[<your username>@]reviews.cloudfoundry.org:29418/cf-release.git
-
-
 		gerrit clone ssh://[<your username>@]reviews.cloudfoundry.org:29418/bosh.git
 
 
 
-1. 运行一些 rake 任务来安装 BOSH CLI
+8. 运行一些 rake 任务来安装 BOSH CLI
 
 
 
-		gem install bosh
-
-_cli
-
-
+		gem install bosh_cli
 		rbenv rehash
-
-
 		bosh --version
 
 
@@ -520,7 +457,7 @@ _cli
 
 
 
-1. 检查 BOSH 设置的状态。
+2. 检查 BOSH 设置的状态。
 
 
 
@@ -528,96 +465,74 @@ _cli
 
 
 
-1. 状态结果将类似于：
+3. 状态结果将类似于：
 
 
 
-		Target         dev48 (http://11.23.128.219:25555) Ver:
-
- 0.3.12 (01169817)
+		Target         dev48 (http://11.23.128.219:25555) Ver:0.3.12 (01169817)
 		UUID           4a8a029c-f0ae-49a2-b016-c8f47aa1ac85
-
-
 		User           admin
-
-
 		Deployment     not set
 
 
 
-1. 列出以前的所有部署（我们很快就会删除它们）。
-
-如果这是您首次部署，将不会有任何内容列出。
-
+4. 列出以前的所有部署（我们很快就会删除它们）。如果这是您首次部署，将不会有任何内容列出。
 
 
 		bosh deployments
 
 
 
-1. `bosh deployments` 的结果应类似于：
+5. `bosh deployments` 的结果应类似于：
 
 
 
 		+-------+
 		| Name  |
 
-
 		+-------+
 		| dev48 |
 
-
 		+-------+
 
-1. 删除现有的部署（例如：
-
-dev48）。
-
+6. 删除现有的部署（例如：dev48）。
 
 
 		bosh delete deployment dev48
 
 
 
-1. 出现提示时请回答 `yes`，然后等待删除操作完成。
+7. 出现提示时请回答 `yes`，然后等待删除操作完成。
 
 
 
-1. 列出以前的发行版（我们很快就会删除它们）。
-
-如果这是您首次部署，将不会有任何内容列出。
-
+8. 列出以前的发行版（我们很快就会删除它们）。如果这是您首次部署，将不会有任何内容列出。
 
 
 		bosh releases
 
 
 
-1. `bosh releases` 的结果应类似于：
+9. `bosh releases` 的结果应类似于：
 
 
 
 		+---------------+---------------+
 		| Name          | Versions      |
 
-
 		+---------------+---------------+
 		| cloudfoundry
-
 	| 47, 55, 58    |
 		+---------------+---------------+
 
-1. 删除现有的发行版（例如：
-
-cloudfoundry）
-
+10. 删除现有的发行版（例如：cloudfoundry）
 
 
 		bosh delete release cloudfoundry
 
 
 
-1. 出现提示时请回答 `yes`，然后等待删除操作完成。
+11. 出现提示时请回答 `yes`，然后等待删除操作完成。
 
 
 
@@ -672,15 +587,7 @@ cloudfoundry）
 
 
 
-1. 创建或找到一个清单文件。
-
-例如，可以从
-
-
-`oss-docs` 文档资源库复制 `bosh/samples/cloudfoundry.yml`
-
-
-。
+1. 创建或找到一个清单文件。例如，可以从`oss-docs` 文档资源库复制 `bosh/samples/cloudfoundry.yml`。
 
 
 
@@ -694,13 +601,11 @@ cloudfoundry）
 1. 将部署设置为指向您的清单文件
 
 
-
-bosh deployment path/to/my-manifest.yml
+		bosh deployment path/to/my-manifest.yml
 
 
 
 1. 将此 cloudfoundry 发行版上传到您的环境。
-
 
 
 		bosh upload release
@@ -723,11 +628,7 @@ bosh deployment path/to/my-manifest.yml
 
 
 
-1. 此次部署将需要几分钟时间才能完成。
-
-如果部署失败，原因可能是此清单与发行版目录不匹配。
-
-如果您的目标平台具有由管理员提供的模板清单（如 `template.erb`），您可以使用 `bosh diff template.erb` 来将您的清单与最新的目标进行对比，然后修复常见的问题，例如缺少属性或作业。
+1. 此次部署将需要几分钟时间才能完成。如果部署失败，原因可能是此清单与发行版目录不匹配。如果您的目标平台具有由管理员提供的模板清单（如 `template.erb`），您可以使用 `bosh diff template.erb` 来将您的清单与最新的目标进行对比，然后修复常见的问题，例如缺少属性或作业。
 
 
 
@@ -748,9 +649,7 @@ BOSH 的安装是使用一款称作“微 BOSH”(Micro BOSH) 的工具完成的
 
 
 理解这种两步过程的一种很好的方式就是将 BOSH 本身也看作一个分布式系统。
-
 由于 BOSH 的核心用途是部署和管理分布式系统，因此我们使用它来部署它自己是合情合理的。
-
 在 BOSH 团队中，我们将此戏称为[盗梦空间](http://en.wikipedia.org/wiki/Inception)。
 
 
@@ -768,7 +667,6 @@ BOSH 的安装是使用一款称作“微 BOSH”(Micro BOSH) 的工具完成的
 1. 在 Ubuntu 上安装 BOSH 部署器所依赖的一些核心包。
 
 
-
 		sudo apt-get -y install libsqlite3-dev genisoimage
 
 
@@ -780,10 +678,7 @@ BOSH 的安装是使用一款称作“微 BOSH”(Micro BOSH) 的工具完成的
 1. 安装 BOSH 部署器 ruby gem。
 
 
-
-		gem install bosh
-
-_deployer
+		gem install bosh_deployer
 
 
 
@@ -797,37 +692,22 @@ _deployer
 
 		% bosh help
 
-
 		...
 		Micro
 
-
 			micro deployment [<name>] 选择要使用的微部署
-
 
 			micro status              显示微 BOSH 部署的状态
 
-
 			micro deployments         显示部署列表
 
+			micro deploy <stemcell>   将微 BOSH 实例部署到当前选择的部署
 
-			micro deploy <stemcell>   将微 BOSH 实例部署到当前
+                                                   --update  更新现有实例
 
-
-选择的部署
-
-
-                            --update  更新现有实例
-
-
-			micro delete              删除微 BOSH 实例（包括
-
-
-持久磁盘）
-
+			micro delete              删除微 BOSH 实例（包括持久磁盘）
 
 			micro agent <args>        发送代理消息
-
 
 			micro apply <spec>        应用规范
 
@@ -839,38 +719,19 @@ _deployer
 
 有关最低 vSphere 配置示例，请参见：
 
-`https://github.com/cloudfoundry/bosh/blob/master/deployer/spec/assets/test-bootstrap-config.yml`。请注意 `disk_path` 为 `BOSH_Deployer`，而非 `BOSH_Disks`。
-
-如果您的 vCenter 承载其他控制器，那么需要一个除 `BOSH_Disks` 以外的数据存储文件夹。
-
-`disk_path` 文件夹需手动创建。
-
-此外，您的配置必须位于 `deployments` 目录中，并遵循具有包含 `micro_bosh.yml` 的 `$name` 子目录这一约定，其中 `$name` 是部署名称。
+`https://github.com/cloudfoundry/bosh/blob/master/deployer/spec/assets/test-bootstrap-config.yml`。请注意 `disk_path` 为 `BOSH_Deployer`，而非 `BOSH_Disks`。如果您的 vCenter 承载其他控制器，那么需要一个除 `BOSH_Disks` 以外的数据存储文件夹。`disk_path` 文件夹需手动创建。此外，您的配置必须位于 `deployments` 目录中，并遵循具有包含 `micro_bosh.yml` 的 `$name` 子目录这一约定，其中 `$name` 是部署名称。
 
 
 
 例如：
 
+		% find deployments -name micro_bosh.yml
 
+		deployments/vcs01/micro_bosh.yml
 
-		% find deployments -name micro
+		deployments/dev32/micro_bosh.yml
 
-_bosh.yml
-
-
-		deployments/vcs01/micro
-
-_bosh.yml
-
-
-		deployments/dev32/micro
-
-_bosh.yml
-
-
-		deployments/dev33/micro
-
-_bosh.yml
+		deployments/dev33/micro_bosh.yml
 
 
 
@@ -887,168 +748,47 @@ _bosh.yml
 
 		cloud:
 
-
-		  plugin:
-
-vsphere
-
+		  plugin:vsphere
 
 		  properties:
 
-
 		    agent:
-
 
 		      ntp:
 
+		        - <ntp_host_1>
 
-		        - <ntp
+		        - <ntp_host_2>
 
-_host
-
-_1>
-		        - <ntp
-
-_host
-
-_2>
 		     vcenters:
 
+		       - host:<vcenter_ip>
 
-		       - host:
+		         user:<vcenter_userid>
 
-<vcenter
-
-_ip>
-
-
-		         user:
-
-<vcenter
-
-_userid>
-
-
-		         password:
-
-<vcenter
-
-_password>
-
+		         password:<vcenter_password>
 
 		         datacenters:
 
+		           - name:<datacenter_name>
 
-		           - name:
+		             vm_folder:<vm_folder_name>
 
-<datacenter
+		             template_folder:<template_folder_name>
 
-_name>
+		             disk_path:<subdir_to_store_disks>
 
+		             datastore_pattern:<data_store_pattern>
 
-		             vm
+		             persistent_datastore_pattern:<persistent_datastore_pattern>
 
-_folder:
-
-<vm
-
-_folder
-
-_name>
-
-
-		             template
-
-_folder:
-
-<template
-
-_folder
-
-_name>
-
-
-		             disk
-
-_path:
-
-<subdir
-
-_to
-
-_store
-
-_disks>
-
-
-		             datastore
-
-_pattern:
-
-<data
-
-_store
-
-_pattern>
-
-
-		             persistent
-
-_datastore
-
-_pattern:
-
-<persistent
-
-_datastore
-
-_pattern>
-
-
-		             allow
-
-_mixed
-
-_datastores:
-
-<true
-
-_if
-
-_persistent
-
-_datastores
-
-_and
-
-_datastore
-
-_patterns
-
-_are
-
-_the
-
-_same>
-
+		             allow_mixed_datastores:<true_if_persistent_datastores_and_datastore_patterns_are_the_same>
 
 		             clusters:
 
+		             - <cluster_name>:
 
-		             - <cluster
-
-_name>:
-
-
-		                 resource
-
-_pool:
-
-<resource
-
-_pool
-
-_name>
+		                 resource_pool:<resource_pool_name>
 
 
 
@@ -1057,498 +797,170 @@ _name>
 
 
 | 对象    | 权限                   |
-
-
-|-----------|------------------------------|
+|-----------|--------------|
 | 数据存储 |                              |
-
-
 |           | 分配空间               |
-
-
 |           | 浏览数据存储             |
-
-
 |           | 低级文件操作    |
-
-
 |           | 删除文件                  |
-
-
 |           | 更新虚拟机文件 |
-
-
 | 文件夹（所有）| |
-
-
 |           | 创建文件夹 |
-
-
 |           | 删除文件夹 |
-
-
 |           | 移动文件夹 |
-
-
 |           | 对文件夹进行重命名 |
-
-
 | 全局 | |
-
-
 |           | 取消任务 |
-
-
 |           | 诊断 |
-
-
 | 主机/配置（所有）| |
-
-
 |           | 高级设置 |
-
-
 |           | 身份验证存储 |
-
-
 |           | 更改日期和时间设置 |
-
-
 |           | 更改 PCIPassthru 设置 |
-
-
 |           | 更改 SNMP 设置 |
-
-
 |           | 连接 |
-
-
 |           | 固件 |
-
-
 |           | 超线程 |
-
-
 |           | 维护 |
-
-
 |           | 内存配置 |
-
-
 |           | 网络配置 |
-
-
 |           | 电源 |
-
-
 |           | 查询修补程序 |
-
-
 |           | 安全配置文件和防火墙 |
-
-
 |           | 存储器分区配置 |
-
-
 |           | 系统管理 |
-
-
 |           | 系统资源 |
-
-
 |           | 虚拟机自动启动配置 |
-
-
 | 主机/清单（所有）| |
-
-
 |           | 为群集添加主机 |
-
-
 |           | 添加独立主机 |
-
-
 |           | 创建群集 |
-
-
 |           | 修改群集 |
-
-
 |           | 移动群集或独立主机 |
-
-
 |           | 移动主机 |
-
-
 |           | 删除群集 |
-
-
 |           | 删除主机 |
-
-
 |           | 对群集进行重命名 |
-
-
 | 主机/本地操作 | |
-
-
 |           | 创建虚拟机 |
-
-
 |           | 删除虚拟机 |
-
-
 |           | 重新配置虚拟机 |
-
-
 | 网络 | |
-
-
 |           | 分配网络 |
-
-
 | 资源（所有）| |
-
-
 |           | 应用建议 |
-
-
 |           | 将 vApp 分配给资源池 |
-
-
 |           | 将虚拟机分配给资源池 |
-
-
 |           | 创建资源池 |
-
-
 |           | 迁移 |
-
-
 |           | 修改资源池 |
-
-
 |           | 移动资源池 |
-
-
 |           | 查询 VMotion |
-
-
 |           | 重定位 |
-
-
 |           | 删除资源池 |
-
-
 |           | 对资源池进行重命名 |
-
-
 |           调度任务（所有）|
-
-
 |           | 创建任务 |
-
-
 |           | 修改任务 |
-
-
 |           | 删除任务 |
-
-
 |           | 运行任务 |
-
-
 |           会话 | |
-
-
 |           | 查看和停止会话 |
-
-
 |           任务（所有）| |
-
-
 |           | 创建任务 |
-
-
 |           | 更新任务 |
-
-
 |           vApp（所有）| |
-
-
 |           | 添加虚拟机 |
-
-
 |           | 分配资源池 |
-
-
 |           | 分配 vApp |
-
-
 |           | 克隆 |
-
-
 |           | 创建 |
-
-
 |           | 删除 |
-
-
 |           | 导出 |
-
-
 |           | 导入 |
-
-
 |           | 移动 |
-
-
 |           | 关闭 |
-
-
 |           | 打开 |
-
-
 |           | 重命名 |
-
-
 |           | 挂起 |
-
-
 |           | 取消注册 |
-
-
 |           | vApp 应用程序配置 |
-
-
 |           | vApp 实例配置 |
-
-
 |           | vApp 资源配置 |
-
-
 |           | 查看 OVF 环境 |
-
-
 | 虚拟机（所有）/配置（所有）| |
-
-
 |           | 添加现有磁盘 |
-
-
 |           | 添加新磁盘 |
-
-
 |           | 添加或删除设备 |
-
-
 |           | 高级 |
-
-
 |           | 更改 CPU 数目 |
-
-
 |           | 更改资源 |
-
-
 |           | 磁盘更改跟踪 |
-
-
 |           | 磁盘租用 |
-
-
 |           | 扩展虚拟磁盘 |
-
-
 |           | 主机 USB 设备 |
-
-
 |           | 内存 |
-
-
 |           | 修改设备设置 |
-
-
 |           | 查询容错兼容性 |
-
-
 |           | 查询无所有者的文件 |
-
-
 |           | 原始设备 |
-
-
 |           | 从路径中重新加载 |
-
-
 |           | 删除磁盘 |
-
-
 |           | 重命名 |
-
-
 |           | 重置客户机信息 |
-
-
 |           | 设置 |
-
-
 |           | 交换文件放置 |
-
-
 |           | 解锁虚拟机 |
-
-
 |           | 升级虚拟硬件 |
-
-
 | 虚拟机（所有）/交互（所有）| |
-
-
 |           | 获取客户机控制票证 |
-
-
 |           | 回答问题 |
-
-
 |           | 备份虚拟机上的操作 |
-
-
 |           | 配置 CD 介质 |
-
-
 |           | 配置软盘介质 |
-
-
 |           | 控制台交互 |
-
-
 |           | 创建屏幕截图 |
-
-
 |           | 对所有磁盘执行碎片整理 |
-
-
 |           | 设备连接 |
-
-
 |           | 禁用容错 |
-
-
 |           | 启用容错 |
-
-
 |           | 关闭 |
-
-
 |           | 打开 |
-
-
 |           | 记录虚拟机上的会话 |
-
-
 |           | 重放虚拟机上的会话 |
-
-
 |           | 重置 |
-
-
 |           | 挂起 |
-
-
 |           | 测试故障切换 |
-
-
 |           | 测试重新启动辅助虚拟机 |
-
-
 |           | 关闭容错 |
-
-
 |           | 打开容错 |
-
-
 |           | VMware Tools 安装 |
-
-
 | 虚拟机（所有）/清单（所有）| |
-
-
 |           | 从现有项创建 |
-
-
 |           | 新建 |
-
-
 |           | 移动 |
-
-
 |           | 注册 |
-
-
 |           | 删除 |
-
-
 |           | 取消注册 |
-
-
 | 虚拟机（所有）/置备（所有）| |
-
-
 |           | 允许访问磁盘 |
-
-
 |           | 允许对磁盘进行只读访问 |
-
-
 |           | 允许下载虚拟机 |
-
-
 |           | 允许上传虚拟机文件 |
-
-
 |           | 克隆模板 |
-
-
 |           | 克隆虚拟机 |
-
-
 |           | 从虚拟机创建模板 |
-
-
 |           | 自定义 |
-
-
 |           | 部署模板 |
-
-
 |           | 标记为模板 |
-
-
 |           | 标记为虚拟机 |
-
-
 |           | 修改自定义规范 |
-
-
 |           | 升级磁盘 |
-
-
 |           | 读取自定义规范 |
-
-
 | 虚拟机（所有）/状态（所有）| |
-
-
 |           | 创建快照 |
-
-
 |           | 删除快照 |
-
-
 |           | 对快照进行重命名 |
-
-
 |           | 恢复到快照 |
 
 
@@ -1557,27 +969,13 @@ _name>
 
 
 
-1. 创建 vm
+1. 创建 vm_folder
 
-_folder
+1. 创建 template_folder
 
+1. 在相应的数据存储中创建 disk_path
 
-
-1. 创建 template
-
-_folder
-
-
-
-1. 在相应的数据存储中创建 disk
-
-_path
-
-
-
-1. 创建 resource
-
-_pool。
+1. 创建 resource_pool。
 
 
 
@@ -1587,50 +985,16 @@ _pool。
 
 
 
-		persistent
-
-_datastore
-
-_pattern:
-
-<datastore
-
-_pattern>
+		persistent_datastore_pattern:<datastore_pattern>
 
 
-		allow
-
-_mixed
-
-_datastores:
-
-<true
-
-_if
-
-_persistent
-
-_datastores
-
-_and
-
-_datastore
-
-_patterns
-
-_are
-
-_the
-
-_same>
+		allow_mixed_datastores:<true_if_persistent_datastores_and_datastore_patterns_are_the_same>
 
 
 		clusters:
 
 
-            		- <cluster
-
-_name>
+            		- <cluster_name>
 
 
 
