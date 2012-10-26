@@ -76,21 +76,37 @@ Cloud Foundry 实例的安装过程分为以下四个部分：
 
 我们可以在任意 Windows机器（甚至是虚拟机）上安装 vSphere Client。之后，我们便可以通过 vSphere Client 以远程方式连接到 vCenter。首先，我们来在 vCenter 中创建一个数据中心。为此，请右键单击左窗格中的 vCenter 节点，然后选择“新建数据中心”（New Datacenter）以添加一个新的数据中心。
 
+![fig5.png](/images/deploy/fig5.png)
+
 接下来，请右键单击新创建的数据中心节点，然后选择“新建群集...”(New Cluster...)。
+
+![fig6.png](/images/deploy/fig6.png)
 
 在“新建群集向导”(New Cluster Wizard) 执行期间，如果您启用了 vSphere DRS 功能，系统将要求您配置 VMware DRS。请确保“自动化级别”(Automation Level) 设置为“半自动”(Partially Automated) 或“全自动”(Fully Automated)，如下所示。如果您选择“手动”(Manual)，将会弹出一个窗口提示您输入您的选择。这种行为可能会阻止 BOSH 自动化安装。
 
+![fig7.png](/images/deploy/fig7.png)
+
 然后，请选中“启用主机监控”(Enable Host Monitoring) 复选框，再选中“禁用:启动违反可用性限制的虚拟机”(Disable: Power on VMs that violate availability constraints)：
+
+![fig8.png](/images/deploy/fig8.png)
 
 接着，转到“虚拟机监控”(VM Monitoring) 子部分，选择“已禁用”(Disabled)：
 
+![fig9.png](/images/deploy/fig9.png)
+
 单击“下一步”(Next)，按如下所示做出选择：
+
+![fig10.png](/images/deploy/fig10.png)
 
 ###添加 vSphere 主机###
 
 下一步是将hypervisor放入我们刚创建的群集中。为此，请右键单击该群集节点，然后选择“添加主机...”(Add Host...)。对于每台 vSphere 服务器，输入其 IP 地址、管理员用户名和密码，然后确认您进行的配置：
 
+![fig11.png](/images/deploy/fig11.png)
+
 添加完所有主机后，这些主机将在“数据中心”(Datacenter) ->“主机”(Hosts) 选项卡中列出：
+
+![fig12.png](/images/deploy/fig12.png)
 
 ###将数据存储挂接到主机###
 
