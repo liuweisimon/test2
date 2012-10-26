@@ -29,7 +29,11 @@ BOSH CLI 安装完毕后，我们现在便开始安装Micro BOSH。如前文所�
 
 3.从“主页”(Home) ->“清单”(Inventory) ->“数据存储”(Datastores) 视图中，选择我们创建的NFSdatastore数据存储，并浏览该存储。
 
+![fig25.png](/images/deploy/fig25.png)
+
 右键单击根文件夹，创建一个用来存储虚拟机的子文件夹。在本例中，我们将此子文件夹命名为“boshdeployer”。此文件夹名称将成为我们部署清单中的“disk_path”参数的值。
+
+![fig26.png](/images/deploy/fig26.png)
  
 注意：如果您没有共享的 NFS 存储，您可以使用hypervisor的本地磁盘作为数据存储。（注意: 仅建议在试验系统采用本地磁盘。）您可以按如下方式命名这些数据存储：主机 1 的数据存储命名为“localstore1”、主机 2 的数据存储命名为“localstore2”，依此类推。随后在清单文件中，您可以使用诸如“localstore*”之类的通配符模式来指定所有主机的数据存储。应在所有本地数据存储上都创建“boshdeployer”文件夹。
 
