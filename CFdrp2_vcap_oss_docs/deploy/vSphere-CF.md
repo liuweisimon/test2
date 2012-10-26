@@ -1,0 +1,369 @@
+###安装部署 Cloud Foundry（/deploy/vSphere-CF.MD）###
+
+在前面的文章中，我们安装了Micro BOSH和 BOSH。如果一切顺利，我们准备已经为好安装 Cloud Foundry做好准备了。首先，我们为Cloud Foundry的部署制定资源计划。
+
+在我们编写本文时，完整的 Cloud Foundry 安装包含大约 34 个不同作业（虚拟机）。其中有些作业为核心组件，必须安装至少一个这类作业的实例；例如，Cloud Controller、NATS 和 DEA 等。有些作业应具有多个实例，具体取决于实际需求；例如 DEA 和router等。有些作业是可选的，例如服务网关和服务节点。因此，我们在安装 Cloud Foundry 前，应决定将哪些组件纳入部署范围。我们制定了要部署的组件的清单后，便可以规划每个作业所需的资源。通常，这些资源包括 IP 地址、CPU、内存和存储。下面是一个部署计划示例。
+
+|作业	|实例数	|IP	|内存	|CPU	|磁盘 (GB)	|是否为必需的？|
+|-------|-------|-------|-------|-------|---------------|--------------|
+|debian_nfs_server	|1	|xx.xx.xx.xx	|2 GB	|2	|16	|必需|
+|nats	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|必需|
+|ccdb_postgres	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|必需|
+|uaadb	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|必需|
+|vcap_redis	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|必需|
+|uaa	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|必需|
+|acmdb	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|必需|
+|acm	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|必需|
+|cloud_controller	|1	|xx.xx.xx.xx	|2 GB	|2	|16	|必需|
+|stager	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|必需|
+|router	|2	|xx.xx.xx.xx	|512 MB	|1	|8	|必需|
+|health_manager	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|必需|
+|dea	|2	|xx.xx.xx.xx	|2 GB	|2	|16	|必需|
+|mysql_node	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|mysql_gateway	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|mongodb_node	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|mongodb_gateway	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|redis_node	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|redis_gateway	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|rabbit_node	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|rabbit_gateway	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|postgresql_node	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|postgresql_gateway	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|vblob_node	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|vblob_gateway	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|backup_manager	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|service_utilities	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|serialization_data_server	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|services_nfs	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|syslog_aggregator	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|services_redis	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|opentsdb	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|collector	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|dashboard	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
+|-------|-------|-------|-------|-------|---------------|--------------|
+|合计：	|36	|	|39 GB	|40	|320	| |
+
+根据上表，我们便可以确定所需的资源池：
+
+|池名称	|规模	|配置	|作业|
+|-------|-------|-------|----|
+|small	|30	|RAM：1 GB；CPU：1 个；磁盘：8 GB	|nats、ccdb_postgres、uaadb、vcap_redis、uaa、acmdb、acm、stager、health_manager、mysql_node、mysql_gateway、mongodb_node、mongodb_gateway、redis_node、redis_gateway、postgresql_node、postgresql_gateway、vblob_node、vblob_gateway、backup_manager、service_utilities、serialization_data_server、services_nfs、syslog_aggregator、services_redis、opentsdb、collector、dashboard|
+|medium	|4	|RAM：2 GB；CPU：2 个；磁盘：16 GB	|debian_nfs_server、cloud_controller、dea|
+|router	|2	|RAM：512 M；CPU：1 个；磁盘：8 GB	|router|
+
+根据上面两个表，我们可以修改清单文件。
+
+我们将清单文件命名为cf.yml。以下各节详细说明了其中的字段。 完整的Cloud Foundry部署yml文件，请参考：https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml（注，此yml文件是用来为Cloud Foundry的BOSH部署提供配置信息，与之前介绍的BOSH yml文件不同）
+
+**name**
+
+这是 Cloud Foundry 部署名。我们可以随意对它命名。
+
+**director_uuid**
+
+director UUID 是我们刚刚在第 III 部分中部署的 BOSH dDirector的 UUID。我们可以通过下面的命令来检索此值：
+
+`$ bosh status`
+
+**release**
+
+此Release名称应与您在创建 CF Release时输入的名称相同。版本是在创建Release时自动生成的。
+
+**compilation、update、networks、resource_pools**
+
+这些字段与 bosh.yml 文件中的那些字段类似。有关更多信息，请参考上一部分。
+
+**jobs**
+
+作业是 Cloud Foundry 的组件。每个作业在一个虚拟机上运行。各个作业的说明如下。
+
+|debian_nfs_server、services_nfs	|这两个作业在 Cloud Foundry 中用作 NFS 服务器。由于它们是文件服务器，因此我们应确保“persistent_disk”属性确实存在。|
+|syslog_aggregator	|此作业用于收集系统日志并将它们存储在数据库中。|
+|nats	|NATS 是 Cloud Foundry 的消息总线。它是 Cloud Foundry 中的核心组件之一。|
+|opentsdb	|这是用来存储日志信息的数据库。由于它是数据库，因此它也需要“persistent_disk”属性。|
+|collector	|此作业用于收集系统信息并将它们存储在数据库中。|
+|dashboard	|这是基于 Web 的控制台工具，用来监视和报告 Cloud Foundry 平台的情况。|
+|cloud_controller、ccdb	|cloud_controller负责控制 Cloud Foundry 的所有组件。“ccdb”是Cloud Controller的数据库。“persistent_disk”属性在ccdb中是必需的。|
+|uaa、uaadb	|uaa用于进行用户身份验证和授权。uaadb是用来存储用户信息的数据库。“persistent_disk”属性对uaadb而言是必需的。|
+|vcap_redis、services_redis	|这两个作业用于存储 Cloud Foundry 的内部键值对。|
+|acm、acmdb	|acm是访问控制管理器 (Access Control Manager) 的简写形式。ACM 是一项服务，借助这项服务，Cloud Foundry 组件可以实现访问控制功能。“acmdb”是acm的数据库。“acmdb”也需要“persistent_disk”属性。|
+|stager	|stager 这个作业负责将用户应用程序的源代码及所有必需包打包。暂存完成后，便会将该应用程序传递给dea加以执行。|
+|router	|用于将用户的请求路由到 Cloud Foundry 中的正确目标位置。|
+|health_manager、health_manager_next	|health_manager这个作业负责监视所有用户的应用程序的运行状况。health_manager_next是health_manager的下一代版本。它们将共存一些时日。|
+|dea	|“dea”是 Droplet Execution Agent 的简写形式。所有用户的应用程序都在dea中执行。|
+|mysql_node、mysql_gateway、mongodb_node、mongodb_gateway、redis_node、redis_gateway、rabbit_node、rabbit_gateway、postgresql_node、postgresql_gateway、vblob_node、vblob_gateway	|这些作业全都是给 Cloud Foundry提供服务的。每项服务都有一个负责置备资源的节点。对应的网关位于cloud_controller与服务节点之间，担当每项服务的管理功能。|
+|backup_manager	|用于备份用户的数据和数据库。|
+|service_utilities	|服务管理实用程序。|
+|serialization_data_server	|用于在 Cloud Foundry 中对数据进行序列化的服务器。|
+
+**properties：**
+
+这是 cf.yml 文件中的另一个重要部分。我们应注意，此节中的 IP 地址应与 jobs 字段中的那些地址要一致。您应将此节中的密码和令牌替换成您自己的安全密码和令牌。
+
+domain：这是供用户访问的域的名称。我们还应创建一个 DNS 服务器来将该域解析为负载均衡器的 IP 地址。在我们的示例中，我们将域名设置为cf.local，以便用户在推送应用程序时可以使用vmc target api.cf.local。
+
+cc.srv_api_uri：此属性通常采用以下格式：http://api.<您的域名>。例如，如果我们将域设置为cf.local，那么srv_api_uri将为 http://api.cf.local。
+
+cc.password：此密码必须包含至少 16 个字符。
+
+cc. allow_registration：如果它为 True，则用户可以使用vmc命令注册帐户。将它设置为 False 则禁止此行为。
+
+cc.admins：管理员用户的名单。即使allow_registration标志设置为 False，管理员用户也可以通过vmc命令进行注册。
+
+这些属性中的大多数“nfs_server”都应设置为“services_nfs”作业的 IP 地址。
+
+mysql_node.production：如果它为 True，则mysql_node的内存必须至少为 4 GB。在试验环境中，我们可以将它设置为 False，这样mysql_node的内存便可以设置为小于 4 GB。
+
+由于yml文件可能会随着 Cloud Foundry 新Release的问世而发生演变，因此提供了使用 BOSH 命令验证yml文件的选项。键入“bosh help”后，您便可以看到“bosh diff”的用法和解释：
+
+`$ bosh diff [<template_file>]`
+
+此命令会将您当前的部署清单与指定的部署清单模板进行对比。它可更新部署配置文件。最新的开发模板可以在deployment repo 中找到。
+
+例如，您可以运行下面的命令来将yml文件与模板文件进行对比。首先，您必须切换到您的 cf.yml 文件和模板文件所在的目录，然后运行下面的命令：
+
+`$ bosh diff dev-template.erb`
+
+此命令将显示 cf.yml 文件中的错误。如果缺少某些字段，此命令将自动帮您填入这些字段。如果有拼写错误或其他错误，此命令将报告存在语法错误。
+
+您可以从以下位置下载部署Cloud Foundry的示例yml文件：
+
+https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml
+
+此清单文件完成后，我们就可以开始安装 Cloud Foundry 了。
+
+1) 在之前的步骤中第 III 部分中，我们已经通过以下命令从Gerrit克隆了 CF 代码库：
+
+`$ gerrit clone ssh://<your username>@reviews.cloudfoundry.org:29418/cf-release.git`
+
+2) 切换到上述目录，然后创建一个 CF Release。
+
+```
+$ cd cf-release
+$ bosh create release 
+```
+
+这将下载部署所需的所有包、blob 数据及其他资源。下载过程将耗费若干分钟，主要取决于网络速度。
+
+**注意：**
+1.如果您编辑了 CF Release中的代码，那么您可能需要在命令 bosh create release 中添加 --force 选项。
+
+2.在运行此命令时系统一定要直接连接Internet。
+
+3.如果您的网络速度慢或者您未与 Internet 建立直接连接，那么您可能需要在一个更好的环境中完成创建Release的操作。您可以在有良好 Internet 连接的机器上使用--with-tarball选项创建此Release。然后，您需要将所生成的 tar 包复制到所需系统。
+
+如果一切都未出问题的话，您可以看到此Release的摘要，大致如下：
+
+		Generating manifest...
+		----------------------
+		Writing manifest...
+		Release summary
+		---------------
+		Packages
+		+---------------------------+---------+-------+------------------------------------------+
+		| Name                      | Version | Notes | Fingerprint                              |
+		+---------------------------+---------+-------+------------------------------------------+
+		| sqlite                    | 3       |       | e3e9b61f8cdc2610480c2aa841e89dc0bb1dc9c9 |
+		| ruby                      | 6       |       | b35a5da6c214d9a97fdd664931bf64987053ad4c |
+		… …
+		| debian_nfs_server         | 3       |       | c1dc860ed6ab2bee68172be996f64f9587e9ac0d |
+		+---------------------------+---------+-------+------------------------------------------+
+		Jobs
+		+---------------------------+----------+-------------+------------------------------------------+
+		| Name                      | Version  | Notes       | Fingerprint                              |
+		+---------------------------+----------+-------------+------------------------------------------+
+		| redis_node                | 19       |             | 61098860eaa8cfb5dc438255ebe28db74a1feabc |
+		| rabbit_gateway            | 13       |             | ddcc0901ded1e45fdc4f318ed4ba8d8ccca51f7f |
+		… …
+		| debian_nfs_server         | 7        |             | 234fabc1a2c5dfbfd7c932882d947fed331b8295 |
+		| memcached_gateway         | 4        |             | 998623d86733a633c789849721e00d85cc3ebc20 |
+		Jobs affected by changes in this release
+		+------------------+----------+
+		| Name             | Version  |
+		+------------------+----------+
+		… …
+		| cloud_controller | 45.1-dev |
+		+------------------+----------+
+		Release version:95.10-dev
+		Release manifest:/home/boshcli/cf-release/dev_releases/cf-def-95.10-dev.yml
+
+正如您可以看到的那样，dev-releases 目录包含此Release的 yml 清单文件（如果启用了 --with-tarball 选项，则还包含一个 tar 包文件）。
+
+3) 将 BOSH CLI 的目标设为 BOSH 的director。如果您不记得该director的 IP，您可以在第 III 部分中的 BOSH 部署清单中找到它。
+
+`$ bosh target 10.60.98.117:25555`
+
+`Target set to 'bosh_director (http://10.60.98.117:25555) Ver:0.5.1 (release:abb3e7a4 bosh:2c69ee8c)'`
+
+4) 通过生成的清单(manifest)文件（例如，示例中的 cf-def-95.10-dev.yml）上传 CF Release。
+
+`$ bosh upload release cf-def-95.10-dev.yml`
+
+这一步将复制安装包和作业，并将它们构建成一个 tar 包，然后对此Release进行验证以确保文件和依赖项正确无误。验证完毕后，它会上传Release并创建新的作业。最后，会看到Release已上传的信息：
+
+		Task 317 done
+		Started		2012-08-28 05:35:43 UTC
+		Finished	2012-08-28 05:36:44 UTC
+		Duration	00:01:01
+		Release uploaded
+
+您可以通过以下命令验证上传的Release：
+
+`$ bosh releases`
+
+您可以查看列表中所有新上传的Release：
+
+		+--------+---------------------------------------------------------------------------+
+		| Name   | Versions                                                                                  |
+		+--------+----------------------------------------------------------------------------+
+		| cf-def | 95.1-dev, 95.8-dev, 95.9-dev, 95.10-dev |
+		| cflab  | 92.1-dev                                                                                  |
+		+--------+-------------------------------------------------------------------------+
+
+5) 在我们已经上传了Release和stemcell（就是第 III 部分中的那个stemcell）后，部署清单(deployment manifest)也已准备就绪，那么就将BOSH的部署配置设置为此部署清单吧：
+
+`$ bosh deployment cf-dev.yml`
+
+设置完毕：
+
+`Deployment set to '/home/boshcli/cf-dev.yml'`
+
+现在我们就可以部署 Cloud Foundry 了：
+
+`$ bosh deploy`
+
+这将为每个作业创建虚拟机、编译包并安装依赖项。此过程将耗费十几分钟到几小时，快慢取决于服务器的硬件条件。您可以看到大致如下的输出：
+
+		Preparing deployment
+		binding deployment (00:00:00)                                                                     
+		binding releases (00:00:01)                                                                       
+		  … …
+		Preparing package compilation
+		  … …
+		Compiling packages
+		   … …
+		Preparing DNS
+		binding DNS (00:00:00)    
+		Creating bound missing VMs
+		  … …                                                             
+		Binding instance VMs
+		  … …                                                                      
+		Preparing configuration
+		binding configuration (00:00:03)                                                                  
+		  … …
+		Creating job cloud_controller
+		cloud_controller/0 (canary) (00:02:45)        
+		  … …                                                    
+		Done                    1/1 00:08:41                                                                
+
+		Task 318 done
+		Started		2012-08-28 05:37:52 UTC
+		Finished	2012-08-28 05:49:43 UTC
+		Duration	00:11:51
+		Deployed 'cf-dev.yml' to 'bosh_director'
+
+要查看您的部署，可以使用下面的命令：
+
+`$ bosh deployments`
+
+		+----------+
+		| Name     |
+		+----------+
+		| cf.local |
+		+----------+
+		Deployments total: 1
+
+您还可以验证每个虚拟机的运行状态：
+
+`$ boshvms`
+
+		+-----------------------------+---------+---------------+-------------+
+		| Job/index                   | State   | Resource Pool | IPs         |
+		+-----------------------------+---------+---------------+-------------+
+		| acm/0                       | running | small         | 10.60.98.58 |
+		| acmdb/0                     | running | small         | 10.60.98.57 |
+		| cloud_controller/0          | running | medium        | 10.60.98.59 |
+		 … … …
+		+-----------------------------+---------+---------------+-------------+
+		VMs total: 40
+
+此时，Cloud Foundry 已经完全安装好了。如果您迫不及待地想要验证此安装，您可以使用vmc命令将其中一个router的 IP 地址设为目标，然后在该目标上部署一个测试用的 Web 应用程序（见后一节）。由于此时没有配置 DNS 服务，因此，在vmc客户端以及运行浏览器来测试的机器的 hosts 文件需包含至少以下两行内容：
+
+		<router的 IP 地址>  api.yourdomain.com  
+		<router的 IP 地址><youapp>.yourdomain.com  
+
+如果上述测试顺利通过，则说明您的 Cloud Foundry 实例正常工作。最后要做的是部署负载均衡器和 DNS服务。它们不属于 Cloud Foundry 的组件，但在生产环境中往往需要正确地设置它们。我们简要地介绍一下如何设置。
+
+您可以部署一个硬件或软件负载均衡器 (LB) 来均匀地向多个router实例分配负载。在我们的示例部署中，我们有两个router。对于软件 LB，您可以使用Stingray 流量管理器。可从以下位置下载该软件：https://support.riverbed.com/download.htm?filename=public/software/stingray/trafficmanager/9.0/ZeusTM_90_Linux-x86_64.tgz
+
+要解析 Cloud Foundry 实例所属的域名，需要有 DNS 服务器。基本而言，DNS 服务器会将像 *.yourdomain.com 这样带通配符的域名解析为负载均衡器的 IP 地址。如果您没有 LB，您可以设置 DNS Rotation，从而以循环方式将域解析为各个router的地址。
+
+LB 和 DNS 设置妥善后，您便可以开始在您的实例上部署应用程序。
+
+VMC 是使用Cloud Foundry的命令行工具。它可以执行 Cloud Foundry 上的大多数操作，例如配置应用程序、将应用部署到 Cloud Foundry 以及监控应用程序的状态。要安装 VMC，需要先安装 Ruby 和RubyGems（ Ruby Gem管理器）。目前支持 Ruby 1.8.7 和 1.9.2。接着，您可以通过下面的命令安装 VMC（有关 VMC 安装的更多信息，请参见http://docs.cloudfoundry.com/tools/vmc/installing-vmc.html）：
+
+`$ sudo gem install vmc`
+
+现在，可指定该 Cloud Foundry 实例的目标，相应的 URL 应形如 api.yourdomain.com，例如：
+
+`$ vmc target api.cf.local`
+
+使用管理员用户和密码（部署清单中指定了该凭据）登录：
+
+`$ vmc login`
+
+起初，系统将要求您为自己的帐户设置密码。登录后，您可以获得自己 Cloud Foundry 实例的信息：
+
+`$ vmc info`
+
+现在，我们来创建并部署一个简单的 Hello World Sinatra 应用程序以验证该实例。
+
+```
+$ mkdir ~/hello
+$ cd ~/hello
+```
+
+创建一个名为hello.rb且包含以下内容的 Ruby 文件：
+
+```
+require 'sinatra'
+get '/' do
+"Hello from Cloud Foundry"
+end
+```
+
+保存此文件，接下来我们要上传此应用程序：
+
+`$ vmc push`
+
+回答提示问题，如下所示
+
+		Would you like to deploy from the current directory?[Yn]: 
+		Application Name:hello
+		Detected a Sinatra Application, is this correct?[Yn]: 
+		Application Deployed URL [hello.cf.local]: 
+		Memory reservation (128M, 256M, 512M, 1G, 2G) [128M]: 
+		How many instances? [1]: 
+		Bind existing services to 'hello'?[yN]: 
+		Create services to bind to 'hello'?[yN]: 
+		Would you like to save this configuration?[yN]: 
+
+稍等片刻后，您将看到以下内容：
+
+		Creating Application:OK
+		Uploading Application:
+		Checking for available resources:OK
+		Packing application:OK
+		Uploading (0K):OK   
+		Push Status:OK
+		Staging Application 'hello':OK                                                 
+		Starting Application 'hello':OK   
+
+现在，到浏览器中访问该应用程序的 URL：hello.cf.local。如果您可以看到下面的文本，则说明您的应用程序已成功部署。
+
+恭喜！您的 Cloud Foundry 实例已经完全设置好了。它在功能上与 cloudfoundry.com 完全相同。
+
+
+
+
+
