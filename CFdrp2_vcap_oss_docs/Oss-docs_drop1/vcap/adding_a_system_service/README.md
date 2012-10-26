@@ -43,8 +43,7 @@ _作者：**Georgi Sabev**_
 `vmc services` 输出的表中。
 本指南既可用于
 单机 Cloud Foundry 环境，又可用于分布式 Cloud Foundry 环境。
-**请注意，我们所用的
-省略号 (...) 表示 Cloud Foundry 的安装目录。**
+**请注意，我们所用的省略号 (...) 表示 Cloud Foundry 的安装目录。**
 如果您要构建自己的服务，您需要注意以下方面：
 
 1. 在
