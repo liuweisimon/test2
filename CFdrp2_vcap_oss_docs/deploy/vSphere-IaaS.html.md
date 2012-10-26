@@ -112,19 +112,29 @@ Cloud Foundry 实例的安装过程分为以下四个部分：
 
 该群集中的所有主机都应共享同一 NFS 存储。对于每个主机，我们将该存储以数据存储的形式添加进来。为此，请在 vCenter 中单击相应的 vSphere 主机，然后选择“配置”(Configuration) 选项卡。选择“硬件”(Hardware) ->“存储”(Storage)。单击右上方的“Add Storage...”(添加存储...) 
 
+![fig13.png](/images/deploy/fig13.png)
+
 在“选择存储类型”(Select Storage Type) 对话框中，选择“网络文件系统”(Network File System)。
 
+![fig14.png](/images/deploy/fig14.png)
+
 输入 NFS 存储的 IP 地址、相应的文件夹名称以及相应的数据存储名称。请务必对该群集内的所有主机都采用完全相同的数据存储名称，这一点非常重要。在本例中，我们采用“NFSdatastore”这一名称。
+
+![fig15.png](/images/deploy/fig15.png)
 
 ###为虚拟机和模板创建文件夹###
 
 从 vCenter 的导航栏中，选择“主页”(Home) ->“清单”(Inventory) ->“虚拟机和模板”(VMs and Templates) 视图，然后按如下所示创建文件夹：
+
+![fig16.png](/images/deploy/fig16.png)
 
 这些文件夹随后将用来对 BOSH 和 Cloud Foundry 的虚拟机进行分组。在上例中，“template_folder_bosh”用来存放 BOSH stemcell。“vm_folder_bosh”用来存放 BOSH 节点。“template_folder”用来存放 Cloud Foundry stemcell。“vm_folder”用来存放 Cloud Foundry 节点。随后将在部署清单文件中用到这些名称。
 
 ###网络配置###
 
 Cloud Foundry 的虚拟机将部署到一个或多个网络中。在部署前，我们需要在 vSphere 中创建一些网络。下图显示了 Cloud Foundry 所需的网络连接。
+
+![fig17.png](/images/deploy/fig17.png)
 
 在每个 vSphere 主机上，我们创建以下两个网络：
 
@@ -137,20 +147,34 @@ Cloud Foundry 的虚拟机将部署到一个或多个网络中。在部署前，
 
 要创建网络，请选择“主机和群集”(Hosts and Clusters) 视图。选择一个主机，然后切换到“配置”(Configuration) 选项卡。然后选择“网络”(Networking)，再单击“添加网络”(Add Networking)：
 
+![fig18.png](/images/deploy/fig18.png)
+
 连接类型应为“虚拟机”(Virtual Machine)：
+
+![fig19.png](/images/deploy/fig19.png)
 
 请使用现有的虚拟交换机：
 
+![fig20.png](/images/deploy/fig20.png)
+
 在下一步中，将网络标签重命名为“CF Network”。如果网络管理员已经指定了VLAN ID，请相应地输入 CF VLAN ID。
+
+![fig21.png](/images/deploy/fig21.png)
 
 然后单击“完成”(Finish)，这样便完成了网络创建。重复上述步骤创建“Service Network”，直接将网络标签命名为“Service Network”即可。
 务必要让同一群集内所有主机上的网络名称都保持完全相同。下图显示已经为某个主机创建了两个网络。我们将这两个网络分别命名为“CF Network”和“Service Network”。稍后在 BOSH 和 Cloud Foundry 的 YML 文件中将会用到这两个名称。
 
+![fig22.png](/images/deploy/fig22.png)
+
 此外，如果您从“数据中心”(Datacenter) ->“清单”(Inventory) ->“网络”(Networking) 视图中进行查看的话，显示如下：
+
+![fig23.png](/images/deploy/fig23.png)
 
 ###为 BOSH CLI 创建一个虚拟机###
 
 从 vCenter 中，我们选择该群集中的主机之一来创建一个虚拟机。为此，请单击“创建新虚拟机”(Create a new virtual machine)。我们将在此虚拟机上安装 64 位 Ubuntu 10.04 操作系统。为此虚拟机分配 2 个虚拟 CPU、2 GB 内存、20 GB 磁盘空间（或者更多）。在安装期间，一定要手动设置网络。
+
+![fig24.png](/images/deploy/fig24.png)
 
 我们现在开始在该虚拟机上安装 BOSH CLI。为此，请登录到 Ubuntu，然后遵照以下步骤操作。（请注意，这些步骤大都摘自 BOSH 官方文档。为了您方便起见，在此将它们列出来。）
 
