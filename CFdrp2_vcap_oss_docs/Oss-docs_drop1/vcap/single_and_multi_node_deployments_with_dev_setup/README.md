@@ -1,4 +1,4 @@
-﻿# 使用 dev_setup 进行的单节点和多节点 VCAP 部署
+# 使用 dev_setup
 
 
 _作者：**Mahesh Patil**_
@@ -127,14 +127,14 @@ sudo apt-get install openssh-server
 
 	现在您既然已经有了必需的依赖项，您就可以运行 BVT 了：
 
-		source ~/.cloudfoundry_deployment_local
+		source ~/.cloudfoundry_部署_local
 		cd cloudfoundry/vcap
 		cd tests && bundle package; bundle install && cd ..
 		rake tests
 
 2. 也可以使用以下命令来运行单元测试：
 
-		source ~/.cloudfoundry_deployment_local
+		source ~/.cloudfoundry_部署_local
 		cd cloud_controller
 		rake spec
 		cd ../dea
@@ -227,7 +227,7 @@ sudo apt-get install openssh-server
 
 ### dev_setup/bin 目录中的脚本
 
-1. _vcap_dev_setup_：安装 VCAP 及其组件时将调用的主脚本
+1. _vcap_dev_setup_: 安装 VCAP 及其组件时将调用的主脚本
 
 		用法：./vcap_dev_setup options
 
@@ -242,9 +242,9 @@ sudo apt-get install openssh-server
 		  -b           cloud foundry repo 分支/标记/SHA
 
 
-2. _vcap_dev_：用于启动/停止组件的脚本
+2. _vcap_dev_: 用于启动/停止组件的脚本
 
-		用法：./vcap_dev [--name deployment_name] [--dir cloudfoundry_home_dir] [start|stop|restart|tail|status]
+		Usage:./vcap_dev [--name deployment_name] [--dir cloudfoundry_home_dir] [start|stop|restart|tail|status]
 		    -n, --name deployment_name       部署名称
 		    -d, --dir cloud_foundry_home_dir Cloud foundry 主目录
 
@@ -284,7 +284,7 @@ name:"rest"
 jobs:  
 install:  
         - nats_server  
-        - cloud_controller:  
+        - cloud_controller :  
 builtin_services:  
               - redis  
               - mongodb  
@@ -339,7 +339,7 @@ Hit http://us.archive.ubuntu.com lucid Release.gpg
 .. and more ..
 
 
-如果此安装过程因出错而停止，请务必查看本文档最后的**已知问题**部分。如果安装成功，那么安装结束时将显示与下面类似的消息。我们暂_不启动_ 这些
+如果此安装过程因出错而停止，请务必查看本文档最后的**已知问题**部分。如果安装成功，那么安装结束时将显示与下面类似的消息。我们暂且_不启动_ 这些
 组件，而是接着在其他节点上安装其他组件，
 最后再按顺序启动它们。
 
@@ -372,7 +372,7 @@ port: "4222"
 user:"nats"  
 password:"nats"
 
-请使用 vcap_dev_setup 脚本进行安装，安装期间会在命令行中传入 dea.yml 
+请使用带有 mysql0.yml 部署配置选项的 vcap_dev_setup 脚本进行安装，安装期间会在命令行中传入 dea.yml 
 配置：
 
     
@@ -415,7 +415,7 @@ Ign http://security.ubuntu.com/ubuntu/ lucid-security/multiverse Translation-en_
     
 .. and more ..
 
-如果此安装过程因出错而停止，请务必查看本文档最后的**已知问题**部分。安装成功后，您将看到与下面类似的消息。我们稍后
+如果此安装过程因出错而停止，请务必查看本文档最后的**已知问题**部分。安装成功后，您将看到与下面类似的消息。我们暂且
 再启动这些组件，现在接着安装 MysQL 节点 0。
     
     ---------------  
@@ -744,7 +744,7 @@ Starting Application:OK
 $ vmc apps
     
     +-------------+----+---------+----------------+--------------+  
-| Application | #  | Health  | URLS           | Services     |  
+| Application | #  | Health  | URLS        | Services |  
     +-------------+----+---------+----------------+--------------+  
 | sv-env      | 1  | RUNNING | env.vcap.me    | mysql-env    |  
     +-------------+----+---------+----------------+--------------+
