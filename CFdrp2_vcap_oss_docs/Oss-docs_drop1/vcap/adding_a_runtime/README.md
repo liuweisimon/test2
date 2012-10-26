@@ -125,10 +125,10 @@ Foundry 中添加运行时来供现有框架使用。有关如何添加框架的
 
    Modify dev_setup/cookbooks/dea/templates/default/dea.yml.erb:
    ```
-runtimes:
-<% if node[:dea][:runtimes].include?("ruby193") %>
-    - ruby193
-<% end %>
+   runtimes:
+   <% if node[:dea][:runtimes].include?("ruby193") %>
+     - ruby193
+   <% end %>
    ```
 
 ## Try it out
@@ -142,32 +142,31 @@ puts "Running Ruby #{RUBY_VERSION}"
 sleep
 
 $ vmc push
-Would you like to deploy from the current directory?[Yn]:
-Application Name:simple
-Detected a Standalone Application, is this correct?[Yn]:
+Would you like to deploy from the current directory? [Yn]:
+Application Name: simple
+Detected a Standalone Application, is this correct? [Yn]:
 ...
 11: ruby193
 Select Runtime [ruby18]: 11
 Selected ruby193
-Start Command:ruby simple.rb
+Start Command: ruby simple.rb
 Application Deployed URL [None]:
 Memory reservation (128M, 256M, 512M, 1G, 2G) [128M]:
 How many instances? [1]:
 Bind existing services to 'simple'? [yN]:
 Create services to bind to 'simple'? [yN]:
 Would you like to save this configuration? [yN]:
-Creating Application:OK
+Creating Application: OK
 Uploading Application:
-Checking for available resources:OK
-Packing application:OK
-Uploading (0K):OK
-Push Status:OK
-Staging Application 'simple':OK
-Starting Application 'simple':OK
+  Checking for available resources: OK
+  Packing application: OK
+  Uploading (0K): OK
+Push Status: OK
+Staging Application 'simple': OK
+Starting Application 'simple': OK
 
 $ vmc logs simple
 ====> /logs/stdout.log <====
 
 Running Ruby 1.9.3
 ```
-
