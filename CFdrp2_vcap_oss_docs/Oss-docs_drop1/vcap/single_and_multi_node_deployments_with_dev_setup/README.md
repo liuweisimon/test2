@@ -39,7 +39,7 @@ Cloud Foundry 由多个系统组件（云控制器、
 
 安装 ssh：
 
-sudo apt-get install openssh-server
+    sudo apt-get install openssh-server
 
 # 单节点部署
 
@@ -93,8 +93,8 @@ sudo apt-get install openssh-server
 1. 验证您能否连接以及测试是否通过。
 
 	从您的虚拟机的控制台中，或者从您的 Mac（得益于本地隧道）中运行以下命令：
-
-	vmc target api.vcap.me
+	
+        vmc target api.vcap.me
 		vmc info
 	
 	注意：如果您运行的是隧道并且选择的是 80 以外的本地端口，您将
@@ -102,11 +102,11 @@ sudo apt-get install openssh-server
 
 2. 这应该会产生大致如下的输出：
 
-	VMware's Cloud Application Platform
-	For support visit http://support.cloudfoundry.com
+        VMware's Cloud Application Platform
+        For support visit http://support.cloudfoundry.com
 
-	Target:http://api.vcap.me (v0.999)
-		Client:v0.3.10
+        Target:   http://api.vcap.me (v0.999)
+		Client:   v0.3.10
 
 3. 以用户身份体验一下，首先运行：
 
@@ -217,8 +217,8 @@ sudo apt-get install openssh-server
 
 3. 将 dev_setup 目录压缩成 tar 包
 
-	$ cd vcap
-	$ tar czvf dev_setup.tar.gz dev_setup
+        $ cd vcap
+        $ tar czvf dev_setup.tar.gz dev_setup
 
 4. 将 dev_setup.tar.gz 文件复制到要
 将 VCAP 及其组件安装到的服务器。
@@ -259,10 +259,10 @@ sudo apt-get install openssh-server
 
 我们将一步步介绍在 4 个节点（包含了示例 IP 地址）上部署 VCAP 组件的过程：
 
-4. **云控制器、路由器、运行状况管理器、服务** - `10.20.143.190`
-1. **DEA** - `10.20.143.187`
-2. **MySQL 节点 0** - `10.20.143.188`
-3. **MySQL 节点 1** - `10.20.143.189`
+  4. **云控制器、路由器、运行状况管理器、服务** - `10.20.143.190`
+  1. **DEA** - `10.20.143.187`
+  2. **MySQL 节点 0** - `10.20.143.188`
+  3. **MySQL 节点 1** - `10.20.143.189`
  
 这种部署在 
 [deployments/sample/multihost_mysql](https://github.com/cloudfoundry/vcap/tree/master/dev_setup/deployments/sample/multihost_mysql) 中有相关说明 - 请阅读这些部署配置文件。
@@ -280,12 +280,12 @@ sudo apt-get install openssh-server
     
     ---  
     deployment:  
-    name:"rest"  
+      name: "rest"  
     jobs:  
-    install:  
+      install:  
         - nats_server  
-        - cloud_controller :  
-    builtin_services:  
+        - cloud_controller:  
+            builtin_services:  
               - redis  
               - mongodb  
               - mysql  
@@ -293,50 +293,50 @@ sudo apt-get install openssh-server
         - health_manager  
         - ccdb  
         - redis:  
-    index: "0"  
+            index: "0"  
         - redis_gateway  
         - mysql_gateway  
         - mongodb:  
-    index: "0"  
+            index: "0"  
         - mongodb_gateway
 
 使用下面的配置文件选项调用 vcap_dev_setup 脚本：
 
     
-~/dev_setup$ bin/vcap_dev_setup -c deployments/sample/multihost_mysql/rest.yml   
-Checking web connectivity. 
-chef-solo is required, should I install it?[Y/n]  
-[sudo] password for cfsupp:
+    ~/dev_setup$ bin/vcap_dev_setup -c deployments/sample/multihost_mysql/rest.yml   
+    Checking web connectivity. 
+    chef-solo is required, should I install it? [Y/n]  
+    [sudo] password for cfsupp:
     
-deb http://apt.opscode.com/ lucid-0.10 main  
-OK  
-Hit http://theonemirror.eng.vmware.com lucid Release.gpg  
-Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid/main Translation-en_US  
-Hit http://theonemirror.eng.vmware.com lucid-security Release.gpg   
-Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-security/main Translation-en_US  
-Hit http://theonemirror.eng.vmware.com lucid-updates Release.gpg   
-Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-updates/main Translation-en_US  
-Hit http://theonemirror.eng.vmware.com lucid Release   
-Hit http://theonemirror.eng.vmware.com lucid-security Release   
-Hit http://theonemirror.eng.vmware.com lucid-updates Release   
-Ign http://theonemirror.eng.vmware.com lucid/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid/main Packages   
-Hit http://theonemirror.eng.vmware.com lucid/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
-Get:1 http://apt.opscode.com lucid-0.10 Release.gpg [198B]   
-Hit http://theonemirror.eng.vmware.com lucid-security/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
-Hit http://theonemirror.eng.vmware.com lucid-updates/main Packages   
-Ign http://apt.opscode.com/ lucid-0.10/main Translation-en_US   
-Get:2 http://apt.opscode.com lucid-0.10 Release [4,477B]   
-Hit http://security.ubuntu.com lucid-security Release.gpg   
-Ign http://apt.opscode.com lucid-0.10/main Packages   
-Ign http://apt.opscode.com lucid-0.10/main Packages   
-Hit http://us.archive.ubuntu.com lucid Release.gpg
+    deb http://apt.opscode.com/ lucid-0.10 main  
+    OK  
+    Hit http://theonemirror.eng.vmware.com lucid Release.gpg  
+    Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid/main Translation-en_US  
+    Hit http://theonemirror.eng.vmware.com lucid-security Release.gpg   
+    Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-security/main Translation-en_US  
+    Hit http://theonemirror.eng.vmware.com lucid-updates Release.gpg   
+    Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-updates/main Translation-en_US  
+    Hit http://theonemirror.eng.vmware.com lucid Release   
+    Hit http://theonemirror.eng.vmware.com lucid-security Release   
+    Hit http://theonemirror.eng.vmware.com lucid-updates Release   
+    Ign http://theonemirror.eng.vmware.com lucid/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid/main Packages   
+    Hit http://theonemirror.eng.vmware.com lucid/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
+    Get:1 http://apt.opscode.com lucid-0.10 Release.gpg [198B]   
+    Hit http://theonemirror.eng.vmware.com lucid-security/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
+    Hit http://theonemirror.eng.vmware.com lucid-updates/main Packages   
+    Ign http://apt.opscode.com/ lucid-0.10/main Translation-en_US   
+    Get:2 http://apt.opscode.com lucid-0.10 Release [4,477B]   
+    Hit http://security.ubuntu.com lucid-security Release.gpg   
+    Ign http://apt.opscode.com lucid-0.10/main Packages   
+    Ign http://apt.opscode.com lucid-0.10/main Packages   
+    Hit http://us.archive.ubuntu.com lucid Release.gpg
     
-.. and more ..
+    .. and more ..
 
 
 如果此安装过程因出错而停止，请务必查看本文档最后的**已知问题**部分。如果安装成功，那么安装结束时将显示与下面类似的消息。我们暂且_不启动_ 这些
@@ -344,12 +344,12 @@ Hit http://us.archive.ubuntu.com lucid Release.gpg
 最后再按顺序启动它们。
 
     ---------------  
-Deployment info  
+    Deployment info  
     ---------------  
-Status:successful  
-Config files:/home/cfsupp/cloudfoundry/.deployments/rest/config  
-Deployment name:rest  
-Command to run cloudfoundry:/home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n rest start
+    Status: successful  
+    Config files: /home/cfsupp/cloudfoundry/.deployments/rest/config  
+    Deployment name: rest  
+    Command to run cloudfoundry: /home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n rest start
 
 ### 3. 安装 DEA 节点：将_dea.yml_ 安装到 10.20.143.187 上
 
@@ -357,74 +357,74 @@ Command to run cloudfoundry:/home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap_de
 [dea.yml](https://github.com/cloudfoundry/vcap/blob/master/dev_setup/deployments/sample/multihost_mysql/dea.yml) 需进行一定的修改（请注意修改后的 `nats_server` 主机）：
 
     ---  
-# Deployment  
+    # Deployment  
     # ----------  
-deployment:  
-name:"dea"
+    deployment:  
+      name: "dea"
     
-jobs:  
-install:  
+    jobs:  
+      install:  
         - dea  
-installed:  
+      installed:  
         - nats_server:  
-host: "10.20.143.190"  
-port: "4222"  
-user:"nats"  
-password:"nats"
+          host: "10.20.143.190"  
+          port: "4222"  
+          user: "nats"  
+          password: "nats"
 
 请使用带有 mysql0.yml 部署配置选项的 vcap_dev_setup 脚本进行安装，安装期间会在命令行中传入 dea.yml 
 配置：
 
     
-~/dev_setup$ bin/vcap_dev_setup -c deployments/sample/multihost_mysql/dea.yml   
-Checking web connectivity. 
-chef-solo is required, should I install it?[Y/n]  
-[sudo] password for cfsupp:
+    ~/dev_setup$ bin/vcap_dev_setup -c deployments/sample/multihost_mysql/dea.yml   
+    Checking web connectivity. 
+    chef-solo is required, should I install it? [Y/n]  
+    [sudo] password for cfsupp:
     
-deb http://apt.opscode.com/ lucid-0.10 main  
-OK  
-Hit http://theonemirror.eng.vmware.com lucid Release.gpg  
-Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid/main Translation-en_US  
-Hit http://theonemirror.eng.vmware.com lucid-security Release.gpg   
-Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-security/main Translation-en_US  
-Hit http://theonemirror.eng.vmware.com lucid-updates Release.gpg   
-Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-updates/main Translation-en_US  
-Hit http://theonemirror.eng.vmware.com lucid Release   
-Hit http://theonemirror.eng.vmware.com lucid-security Release   
-Hit http://theonemirror.eng.vmware.com lucid-updates Release   
-Ign http://theonemirror.eng.vmware.com lucid/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid/main Packages   
-Hit http://theonemirror.eng.vmware.com lucid/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
-Hit http://theonemirror.eng.vmware.com lucid-security/main Packages   
-Get:1 http://apt.opscode.com lucid-0.10 Release.gpg [198B]   
-Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
-Hit http://theonemirror.eng.vmware.com lucid-updates/main Packages   
-Ign http://apt.opscode.com/ lucid-0.10/main Translation-en_US 
-Get:2 http://apt.opscode.com lucid-0.10 Release [4,477B]
-Ign http://apt.opscode.com lucid-0.10/main Packages
-Ign http://apt.opscode.com lucid-0.10/main Packages
-Hit http://security.ubuntu.com lucid-security Release.gpg
-Get:3 http://apt.opscode.com lucid-0.10/main Packages [14.6kB]
-Ign http://security.ubuntu.com/ubuntu/ lucid-security/main Translation-en_US
-Ign http://security.ubuntu.com/ubuntu/ lucid-security/restricted Translation-en_US
-Ign http://security.ubuntu.com/ubuntu/ lucid-security/universe Translation-en_US
-Ign http://security.ubuntu.com/ubuntu/ lucid-security/multiverse Translation-en_US
+    deb http://apt.opscode.com/ lucid-0.10 main  
+    OK  
+    Hit http://theonemirror.eng.vmware.com lucid Release.gpg  
+    Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid/main Translation-en_US  
+    Hit http://theonemirror.eng.vmware.com lucid-security Release.gpg   
+    Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-security/main Translation-en_US  
+    Hit http://theonemirror.eng.vmware.com lucid-updates Release.gpg   
+    Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-updates/main Translation-en_US  
+    Hit http://theonemirror.eng.vmware.com lucid Release   
+    Hit http://theonemirror.eng.vmware.com lucid-security Release   
+    Hit http://theonemirror.eng.vmware.com lucid-updates Release   
+    Ign http://theonemirror.eng.vmware.com lucid/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid/main Packages   
+    Hit http://theonemirror.eng.vmware.com lucid/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
+    Hit http://theonemirror.eng.vmware.com lucid-security/main Packages   
+    Get:1 http://apt.opscode.com lucid-0.10 Release.gpg [198B]   
+    Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
+    Hit http://theonemirror.eng.vmware.com lucid-updates/main Packages   
+    Ign http://apt.opscode.com/ lucid-0.10/main Translation-en_US 
+    Get:2 http://apt.opscode.com lucid-0.10 Release [4,477B]
+    Ign http://apt.opscode.com lucid-0.10/main Packages
+    Ign http://apt.opscode.com lucid-0.10/main Packages
+    Hit http://security.ubuntu.com lucid-security Release.gpg
+    Get:3 http://apt.opscode.com lucid-0.10/main Packages [14.6kB]
+    Ign http://security.ubuntu.com/ubuntu/ lucid-security/main Translation-en_US
+    Ign http://security.ubuntu.com/ubuntu/ lucid-security/restricted Translation-en_US
+    Ign http://security.ubuntu.com/ubuntu/ lucid-security/universe Translation-en_US
+    Ign http://security.ubuntu.com/ubuntu/ lucid-security/multiverse Translation-en_US
     
-.. and more ..
+    .. and more ..
 
 如果此安装过程因出错而停止，请务必查看本文档最后的**已知问题**部分。安装成功后，您将看到与下面类似的消息。我们暂且
 再启动这些组件，现在接着安装 MysQL 节点 0。
     
     ---------------  
-Deployment info  
+    Deployment info  
     ---------------  
-Status:successful  
-Config files:/home/cfsupp/cloudfoundry/.deployments/dea/config  
-Deployment name:dea  
-Command to run cloudfoundry:/home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n dea start
+    Status: successful  
+    Config files: /home/cfsupp/cloudfoundry/.deployments/dea/config  
+    Deployment name: dea  
+    Command to run cloudfoundry: /home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n dea start
 
 
 ### 4. 安装第一个 MySQL 节点：将_mysql0.yml_ 安装到 10.20.143.188 上
@@ -433,66 +433,66 @@ Command to run cloudfoundry:/home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap_de
 
     
     ---  
-deployment:  
-name:"mysql0"  
-jobs:  
-install:  
+    deployment:  
+      name: "mysql0"  
+    jobs:  
+      install:  
         - mysql:  
-index: "0"  
-installed:  
+            index: "0"  
+       installed:  
          - nats_server:  
-host: "10.20.143.190"
-port: "4222"  
-user:"nats"  
-password:"nats"
+           host: "10.20.143.190"
+           port: "4222"  
+           user: "nats"  
+           password: "nats"
 
 
 请使用带有 mysql0.yml 部署配置选项的 vcap_dev_setup 脚本进行安装：
 
     
-~/dev_setup$ bin/vcap_dev_setup -c deployments/sample/multihost_mysql/mysql0.yml
-Checking web connectivity. 
-chef-solo is required, should I install it?[Y/n]  
-[sudo] password for cfsupp:
+    ~/dev_setup$ bin/vcap_dev_setup -c deployments/sample/multihost_mysql/mysql0.yml
+    Checking web connectivity. 
+    chef-solo is required, should I install it? [Y/n]  
+    [sudo] password for cfsupp:
     
-deb http://apt.opscode.com/ lucid-0.10 main  
-OK  
-Hit http://theonemirror.eng.vmware.com lucid Release.gpg  
-Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid/main Translation-en_US  
-Hit http://theonemirror.eng.vmware.com lucid-security Release.gpg   
-Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-security/main Translation-en_US  
-Hit http://theonemirror.eng.vmware.com lucid-updates Release.gpg   
-Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-updates/main Translation-en_US  
-Hit http://theonemirror.eng.vmware.com lucid Release   
-Hit http://theonemirror.eng.vmware.com lucid-security Release   
-Hit http://theonemirror.eng.vmware.com lucid-updates Release   
-Ign http://theonemirror.eng.vmware.com lucid/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
-Hit http://theonemirror.eng.vmware.com lucid/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
-Hit http://theonemirror.eng.vmware.com lucid-security/main Packages   
-Hit http://theonemirror.eng.vmware.com lucid-updates/main Packages   
-Get:1 http://apt.opscode.com lucid-0.10 Release.gpg [198B]   
-Ign http://apt.opscode.com/ lucid-0.10/main Translation-en_US   
-Get:2 http://apt.opscode.com lucid-0.10 Release [4,477B]   
-Ign http://apt.opscode.com lucid-0.10/main Packages
+    deb http://apt.opscode.com/ lucid-0.10 main  
+    OK  
+    Hit http://theonemirror.eng.vmware.com lucid Release.gpg  
+    Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid/main Translation-en_US  
+    Hit http://theonemirror.eng.vmware.com lucid-security Release.gpg   
+    Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-security/main Translation-en_US  
+    Hit http://theonemirror.eng.vmware.com lucid-updates Release.gpg   
+    Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-updates/main Translation-en_US  
+    Hit http://theonemirror.eng.vmware.com lucid Release   
+    Hit http://theonemirror.eng.vmware.com lucid-security Release   
+    Hit http://theonemirror.eng.vmware.com lucid-updates Release   
+    Ign http://theonemirror.eng.vmware.com lucid/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
+    Hit http://theonemirror.eng.vmware.com lucid/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
+    Hit http://theonemirror.eng.vmware.com lucid-security/main Packages   
+    Hit http://theonemirror.eng.vmware.com lucid-updates/main Packages   
+    Get:1 http://apt.opscode.com lucid-0.10 Release.gpg [198B]   
+    Ign http://apt.opscode.com/ lucid-0.10/main Translation-en_US   
+    Get:2 http://apt.opscode.com lucid-0.10 Release [4,477B]   
+    Ign http://apt.opscode.com lucid-0.10/main Packages
     
-.. and more ..
+    .. and more ..
 
 安装结束时，您将看到与下面类似的消息。我们暂且
 不启动这些组件，而是接着安装 
 MySQL 节点 1。
 
     ---------------  
-Deployment info  
+    Deployment info  
     ---------------  
-Status:successful  
-Config files:/home/cfsupp/cloudfoundry/.deployments/mysql0/config  
-Deployment name:mysql0  
-Command to run cloudfoundry:/home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n mysql0 start
+    Status: successful  
+    Config files: /home/cfsupp/cloudfoundry/.deployments/mysql0/config  
+    Deployment name: mysql0  
+    Command to run cloudfoundry: /home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n mysql0 start
 
 
 ### 5. 安装第二个 MySQL 节点：将_mysql1.yml_ 安装到 10.20.143.189 上
@@ -501,74 +501,74 @@ Command to run cloudfoundry:/home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap_de
 
     
     ---  
-deployment:  
-name:"mysql1"  
-jobs:  
-install:  
+    deployment:  
+      name: "mysql1"  
+    jobs:  
+      install:  
         - mysql:  
-index: "1"  
-installed:  
+          index: "1"  
+      installed:  
         - nats_server:  
-host: "10.20.143.190"  
-port: "4222"  
-user:"nats"  
-password:"nats"
+          host: "10.20.143.190"  
+          port: "4222"  
+          user: "nats"  
+          password: "nats"
 
 请使用带有 mysql0.yml 部署配置选项的 vcap_dev_setup 脚本进行
 安装：
 
-~/dev_setup$ bin/vcap_dev_setup -c deployments/sample/multihost_mysql/mysql1.yml
-Checking web connectivity. 
-chef-solo is required, should I install it?[Y/n]  
-[sudo] password for cfsupp:
+    ~/dev_setup$ bin/vcap_dev_setup -c deployments/sample/multihost_mysql/mysql1.yml
+    Checking web connectivity. 
+    chef-solo is required, should I install it? [Y/n]  
+    [sudo] password for cfsupp:
     
-deb http://apt.opscode.com/ lucid-0.10 main  
-OK  
-Hit http://theonemirror.eng.vmware.com lucid Release.gpg  
-Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid/main Translation-en_US  
-Hit http://theonemirror.eng.vmware.com lucid-security Release.gpg   
-Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-security/main Translation-en_US  
-Hit http://theonemirror.eng.vmware.com lucid-updates Release.gpg   
-Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-updates/main Translation-en_US  
-Hit http://theonemirror.eng.vmware.com lucid Release   
-Hit http://theonemirror.eng.vmware.com lucid-security Release   
-Hit http://theonemirror.eng.vmware.com lucid-updates Release   
-Ign http://theonemirror.eng.vmware.com lucid/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid/main Packages   
-Hit http://theonemirror.eng.vmware.com lucid/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
-Hit http://theonemirror.eng.vmware.com lucid-security/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
-Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
-Get:1 http://apt.opscode.com lucid-0.10 Release.gpg [198B]   
-Hit http://theonemirror.eng.vmware.com lucid-updates/main Packages   
-Ign http://apt.opscode.com/ lucid-0.10/main Translation-en_US   
-Get:2 http://apt.opscode.com lucid-0.10 Release [4,477B]   
-Ign http://apt.opscode.com lucid-0.10/main Packages   
-Get:3 http://security.ubuntu.com lucid-security Release.gpg [198B]  
-Hit http://us.archive.ubuntu.com lucid Release.gpg   
-Ign http://apt.opscode.com lucid-0.10/main Packages   
-Get:4 http://apt.opscode.com lucid-0.10/main Packages [14.6kB]   
-Ign http://security.ubuntu.com/ubuntu/ lucid-security/main Translation-en_US  
-Ign http://us.archive.ubuntu.com/ubuntu/ lucid/main Translation-en_US   
-Ign http://security.ubuntu.com/ubuntu/ lucid-security/restricted Translation-en_US   
-Ign http://us.archive.ubuntu.com/ubuntu/ lucid/restricted Translation-en_US  
-Ign http://us.archive.ubuntu.com/ubuntu/ lucid/universe Translation-en_US  
-Ign http://security.ubuntu.com/ubuntu/ lucid-security/universe Translation-en_US
+    deb http://apt.opscode.com/ lucid-0.10 main  
+    OK  
+    Hit http://theonemirror.eng.vmware.com lucid Release.gpg  
+    Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid/main Translation-en_US  
+    Hit http://theonemirror.eng.vmware.com lucid-security Release.gpg   
+    Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-security/main Translation-en_US  
+    Hit http://theonemirror.eng.vmware.com lucid-updates Release.gpg   
+    Ign http://theonemirror.eng.vmware.com/ubuntu/ lucid-updates/main Translation-en_US  
+    Hit http://theonemirror.eng.vmware.com lucid Release   
+    Hit http://theonemirror.eng.vmware.com lucid-security Release   
+    Hit http://theonemirror.eng.vmware.com lucid-updates Release   
+    Ign http://theonemirror.eng.vmware.com lucid/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid/main Packages   
+    Hit http://theonemirror.eng.vmware.com lucid/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-security/main Packages   
+    Hit http://theonemirror.eng.vmware.com lucid-security/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
+    Ign http://theonemirror.eng.vmware.com lucid-updates/main Packages   
+    Get:1 http://apt.opscode.com lucid-0.10 Release.gpg [198B]   
+    Hit http://theonemirror.eng.vmware.com lucid-updates/main Packages   
+    Ign http://apt.opscode.com/ lucid-0.10/main Translation-en_US   
+    Get:2 http://apt.opscode.com lucid-0.10 Release [4,477B]   
+    Ign http://apt.opscode.com lucid-0.10/main Packages   
+    Get:3 http://security.ubuntu.com lucid-security Release.gpg [198B]  
+    Hit http://us.archive.ubuntu.com lucid Release.gpg   
+    Ign http://apt.opscode.com lucid-0.10/main Packages   
+    Get:4 http://apt.opscode.com lucid-0.10/main Packages [14.6kB]   
+    Ign http://security.ubuntu.com/ubuntu/ lucid-security/main Translation-en_US  
+    Ign http://us.archive.ubuntu.com/ubuntu/ lucid/main Translation-en_US   
+    Ign http://security.ubuntu.com/ubuntu/ lucid-security/restricted Translation-en_US   
+    Ign http://us.archive.ubuntu.com/ubuntu/ lucid/restricted Translation-en_US  
+    Ign http://us.archive.ubuntu.com/ubuntu/ lucid/universe Translation-en_US  
+    Ign http://security.ubuntu.com/ubuntu/ lucid-security/universe Translation-en_US
     
-.. and more ..
+    .. and more ..
 
 安装结束时，您将看到与下面类似的消息。
 
     
     ---------------  
-Deployment info  
+    Deployment info  
     ---------------  
-Status:successful  
-Config files:/home/cfsupp/cloudfoundry/.deployments/mysql1/config  
-Deployment name:mysql1  
-Command to run cloudfoundry:/home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n mysql1 start
+    Status: successful  
+    Config files: /home/cfsupp/cloudfoundry/.deployments/mysql1/config  
+    Deployment name: mysql1  
+    Command to run cloudfoundry: /home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n mysql1 start
 
 
 ### 5. 启动所有组件
@@ -577,106 +577,106 @@ Command to run cloudfoundry:/home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap_de
 节点 (`10.20.143.190`) 上的组件
 
     
-	$ ~/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n rest start 
-	Setting up cloud controller environment  
-	Using cloudfoundry config from /home/cfsupp/cloudfoundry/.deployments/rest/config  
-	Executing /home/cfsupp/cloudfoundry/.deployments/rest/deploy/rubies/ruby-1.9.2-p180/bin/ruby /home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap start health_manager mongodb_gateway router redis_gateway mongodb_backup redis_node mongodb_node mysql_gateway redis_backup cloud_controller -c /home/cfsupp/cloudfoundry/.deployments/rest/config -v /home/cfsupp/cloudfoundry/vcap/bin  
-	health_manager :RUNNING  
-	mongodb_gateway :RUNNING  
-	router :RUNNING  
-	redis_gateway :RUNNING  
-	redis_node :RUNNING  
-	mongodb_node :RUNNING  
-	mysql_gateway :RUNNING  
-	cloud_controller :RUNNING
+    	$ ~/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n rest start 
+    	Setting up cloud controller environment  
+    	Using cloudfoundry config from /home/cfsupp/cloudfoundry/.deployments/rest/config  
+    	Executing /home/cfsupp/cloudfoundry/.deployments/rest/deploy/rubies/ruby-1.9.2-p180/bin/ruby /home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap start health_manager mongodb_gateway router redis_gateway mongodb_backup redis_node mongodb_node mysql_gateway redis_backup cloud_controller -c /home/cfsupp/cloudfoundry/.deployments/rest/config -v /home/cfsupp/cloudfoundry/vcap/bin  
+    	health_manager : RUNNING  
+    	mongodb_gateway : RUNNING  
+    	router : RUNNING  
+    	redis_gateway : RUNNING  
+    	redis_node : RUNNING  
+    	mongodb_node : RUNNING  
+    	mysql_gateway : RUNNING  
+    	cloud_controller : RUNNING
 
 2. 启动安装在 **_dea_** 部署节点 (`10.20.143.187`) 上的组件
 
-	$ ~/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n dea start  
-	Using cloudfoundry config from /home/cfsupp/cloudfoundry/.deployments/dea/config  
-	Executing /home/cfsupp/cloudfoundry/.deployments/dea/deploy/rubies/ruby-1.9.2-p180/bin/ruby /home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap start dea -c /home/cfsupp/cloudfoundry/.deployments/dea/config -v /home/cfsupp/cloudfoundry/vcap/bin  
-	dea :RUNNING
+    	$ ~/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n dea start  
+    	Using cloudfoundry config from /home/cfsupp/cloudfoundry/.deployments/dea/config  
+    	Executing /home/cfsupp/cloudfoundry/.deployments/dea/deploy/rubies/ruby-1.9.2-p180/bin/ruby /home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap start dea -c /home/cfsupp/cloudfoundry/.deployments/dea/config -v /home/cfsupp/cloudfoundry/vcap/bin  
+    	dea : RUNNING
 
 3. 启动安装在 **_mysql0_** 部署节点 (`10.20.143.188`) 上的组件
 
     
-	$ ~/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n mysql0 start 
-	Using cloudfoundry config from /home/cfsupp/cloudfoundry/.deployments/mysql0/config  
-	Executing /home/cfsupp/cloudfoundry/.deployments/mysql0/deploy/rubies/ruby-1.9.2-p180/bin/ruby /home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap start mysql_backup mysql_node -c /home/cfsupp/cloudfoundry/.deployments/mysql0/config -v /home/cfsupp/cloudfoundry/vcap/bin  
-	mysql_node :RUNNING
+    	$ ~/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n mysql0 start 
+    	Using cloudfoundry config from /home/cfsupp/cloudfoundry/.deployments/mysql0/config  
+    	Executing /home/cfsupp/cloudfoundry/.deployments/mysql0/deploy/rubies/ruby-1.9.2-p180/bin/ruby /home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap start mysql_backup mysql_node -c /home/cfsupp/cloudfoundry/.deployments/mysql0/config -v /home/cfsupp/cloudfoundry/vcap/bin  
+    	mysql_node : RUNNING
 
 4. 启动安装在 **_mysql1_** 部署节点 (`10.20.143.189`) 上的组件
 
     
-	$ ~/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n mysql1 start**  
-	 	Using cloudfoundry config from /home/cfsupp/cloudfoundry/.deployments/mysql1/config  
-	Executing /home/cfsupp/cloudfoundry/.deployments/mysql1/deploy/rubies/ruby-1.9.2-p180/bin/ruby /home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap start mysql_backup mysql_node -c /home/cfsupp/cloudfoundry/.deployments/mysql1/config -v /home/cfsupp/cloudfoundry/vcap/bin  
-	mysql_node :RUNNING
+    	$ ~/cloudfoundry/vcap/dev_setup/bin/vcap_dev -n mysql1 start**  
+   	 	Using cloudfoundry config from /home/cfsupp/cloudfoundry/.deployments/mysql1/config  
+    	Executing /home/cfsupp/cloudfoundry/.deployments/mysql1/deploy/rubies/ruby-1.9.2-p180/bin/ruby /home/cfsupp/cloudfoundry/vcap/dev_setup/bin/vcap start mysql_backup mysql_node -c /home/cfsupp/cloudfoundry/.deployments/mysql1/config -v /home/cfsupp/cloudfoundry/vcap/bin  
+    	mysql_node : RUNNING
 
 ## 多节点安装验证
 
 cloud_controller 组件在 `api.vcap.me` 端点上侦听命令，该端点绑定到 `127.0.0.1`。请在当前运行 cloud_controller 的节点（位于 `10.20.143.190` 的 **rest** 节点）上运行 vcap 命令行客户端 `vmc`。
 
     
-$ vmc target
+    $ vmc target
     
-[http://api.vcap.me]
+    [http://api.vcap.me]
     
-$ vmc info
+    $ vmc info
     
-VMware's Cloud Application Platform  
-For support visit http://support.cloudfoundry.com
+    VMware's Cloud Application Platform  
+    For support visit http://support.cloudfoundry.com
     
-Target:http://api.vcap.me (v0.999)  
-Client:v0.3.12
+    Target: http://api.vcap.me (v0.999)  
+    Client: v0.3.12
     
-$ vmc register
-Email:user@vmware.com  
-Password: *******  
-Verify Password: *******  
-Creating New User:OK  
-Successfully logged into [http://api.vcap.me]
+    $ vmc register
+    Email: user@vmware.com  
+    Password: *******  
+    Verify Password: *******  
+    Creating New User: OK  
+    Successfully logged into [http://api.vcap.me]
     
-$ vmc info
+    $ vmc info
     
-VMware's Cloud Application Platform  
-For support visit http://support.cloudfoundry.com
+    VMware's Cloud Application Platform  
+    For support visit http://support.cloudfoundry.com
     
-Target:http://api.vcap.me (v0.999)  
-Client:v0.3.12
+    Target: http://api.vcap.me (v0.999)  
+    Client: v0.3.12
     
-User:user@vmware.com  
-Usage:Memory (0B of 2.0G total)  
-Services (0 of 16 total)  
-Apps (0 of 20 total)
+    User: user@vmware.com  
+    Usage: Memory (0B of 2.0G total)  
+     Services (0 of 16 total)  
+     Apps (0 of 20 total)
     
-$ vmc services
+    $ vmc services
     
-============== System Services ==============
+    ============== System Services ==============
     
     +---------+---------+-------------------------------+  
-| Service | Version | Description                   |  
+    | Service | Version | Description                   |  
     +---------+---------+-------------------------------+  
-| mongodb | 1.8 | MongoDB NoSQL store               |  
-| mysql   | 5.1 | MySQL database service            |  
-| redis   | 2.2 | Redis key-value store service     |  
+    | mongodb | 1.8 | MongoDB NoSQL store               |  
+    | mysql   | 5.1 | MySQL database service            |  
+    | redis   | 2.2 | Redis key-value store service     |  
     +---------+---------+-------------------------------+
     
-=========== Provisioned Services ============
+    =========== Provisioned Services ============
     
       
-$ vmc frameworks
+    $ vmc frameworks
     
     +-----------+  
-| Name      |  
+    | Name      |  
     +-----------+  
-| sinatra   |  
-| spring    |  
-| node      |  
-| grails    |  
-| lift      |  
-| rails3    |  
-| otp_rebar |  
+    | sinatra   |  
+    | spring    |  
+    | node      |  
+    | grails    |  
+    | lift      |  
+    | rails3    |  
+    | otp_rebar |  
     +-----------+
 
 我们将推送一个 Sinatra 示例应用程序，该应用程序会输出 Cloud Foundry 中的应用程序可用的 
@@ -711,42 +711,42 @@ $ vmc frameworks
 	
 然后，将此应用程序推送到您的 VCAP 实例：
     
-$ vmc push env -n  
-Creating Application:OK  
-Uploading Application:  
-Checking for available resources:OK  
-Packing application:OK  
-Uploading (1K):OK   
-Push Status:OK  
-Staging Application:OK   
-Starting Application:OK
+    $ vmc push env -n  
+    Creating Application: OK  
+    Uploading Application:  
+     Checking for available resources: OK  
+     Packing application: OK  
+     Uploading (1K): OK   
+    Push Status: OK  
+    Staging Application: OK   
+    Starting Application: OK
     
-$ curl -I env.vcap.me 
-HTTP/1.1 200 OK   
-Server:nginx/0.7.65  
-Date:Wed, 07 Sep 2011 23:39:09 GMT  
-Content-Type:text/html;charset=utf-8  
-Connection:keep-alive  
-Keep-Alive:timeout=20  
-Vary:Accept-Encoding  
-Content-Length: 4239
+    $ curl -I env.vcap.me 
+    HTTP/1.1 200 OK   
+    Server: nginx/0.7.65  
+    Date: Wed, 07 Sep 2011 23:39:09 GMT  
+    Content-Type: text/html;charset=utf-8  
+    Connection: keep-alive  
+    Keep-Alive: timeout=20  
+    Vary: Accept-Encoding  
+    Content-Length: 4239
 
 我们将创建一项 mysql 服务并将这项服务绑定到此应用程序
 
     
-$ vmc create-service mysql mysql-env env  
-Creating Service:OK  
-Binding Service:OK  
-Stopping Application:OK  
-Staging Application:OK   
-Starting Application:OK
+    $ vmc create-service mysql mysql-env env  
+    Creating Service: OK  
+    Binding Service: OK  
+    Stopping Application: OK  
+    Staging Application: OK   
+    Starting Application: OK
     
-$ vmc apps
+    $ vmc apps
     
     +-------------+----+---------+----------------+--------------+  
-| Application | #  | Health  | URLS        | Services |  
+    | Application | #  | Health  | URLS           | Services     |  
     +-------------+----+---------+----------------+--------------+  
-| sv-env      | 1  | RUNNING | env.vcap.me    | mysql-env    |  
+    | sv-env      | 1  | RUNNING | env.vcap.me    | mysql-env    |  
     +-------------+----+---------+----------------+--------------+
        
 
@@ -798,20 +798,18 @@ $ vmc apps
 ## 安装_rack_ 时失败并出现_ArgumentError_
 显示的错误可能类似于：
    
-	[Wed, 31 Aug 2011 14:36:56 -0700] WARN:failed to find gem rack (>= 0, runtime) from [http://gems.rubyforge.org/]  
-	[Wed, 31 Aug 2011 14:36:56 -0700] DEBUG:sh(/home/cfsupp/cloudfoundry/.deployments/devbox/deploy/rubies/ruby-1.8.7-p334/bin/gem install rack -q --no-rdoc --no-ri -v "")  
-	[Wed, 31 Aug 2011 14:36:56 -0700] ERROR:gem_package[rack] (ruby::default line 75) has had an error  
-	[Wed, 31 Aug 2011 14:36:56 -0700] ERROR:gem_package[rack] (/home/cfsupp/cloudfoundry/vcap/dev_setup/cookbooks/ruby/recipes/default.rb:75:in `from_file') had an error:  
-	gem_package[rack] (ruby::default line 75) had an error:Expected process to exit with [0], but received '1'
-	[Tue, 06 Sep 2011 15:16:44 -0700] FATAL:Chef::Exceptions::ShellCommandFailed:gem_package[rack] (ruby::default line 75) had an error:Expected process to exit with [0], but received '1'  
+    	[Wed, 31 Aug 2011 14:36:56 -0700] WARN: failed to find gem rack (>= 0, runtime) from [http://gems.rubyforge.org/]  
+    	[Wed, 31 Aug 2011 14:36:56 -0700] DEBUG: sh(/home/cfsupp/cloudfoundry/.deployments/devbox/deploy/rubies/ruby-1.8.7-p334/bin/gem install rack -q --no-rdoc --no-ri -v "")  
+    	[Wed, 31 Aug 2011 14:36:56 -0700] ERROR: gem_package[rack] (ruby::default line 75) has had an error  
+    	[Wed, 31 Aug 2011 14:36:56 -0700] ERROR: gem_package[rack] (/home/cfsupp/cloudfoundry/vcap/dev_setup/cookbooks/ruby/recipes/default.rb:75:in `from_file') had an error:  
+    	gem_package[rack] (ruby::default line 75) had an error: Expected process to exit with [0], but received '1'
+    	[Tue, 06 Sep 2011 15:16:44 -0700] FATAL: Chef::Exceptions::ShellCommandFailed: gem_package[rack] (ruby::default line 75) had an error: Expected process to exit with [0], but received '1'  
     	---- Begin output of /home/cfsupp/cloudfoundry/.deployments/rest/deploy/rubies/ruby-1.8.7-p334/bin/gem install rack -q --no-rdoc --no-ri -v "" ----  
-	STDOUT:   
-	STDERR:ERROR:While executing gem ...(ArgumentError)
-	Illformed requirement [""] 
+    	STDOUT:   
+    	STDERR: ERROR: While executing gem ... (ArgumentError)
+    	Illformed requirement [""] 
     	---- End output of /home/cfsupp/cloudfoundry/.deployments/rest/deploy/rubies/ruby-1.8.7-p334/bin/gem install rack -q --no-rdoc --no-ri -v "" ----  
-	Ran /home/cfsupp/cloudfoundry/.deployments/rest/deploy/rubies/ruby-1.8.7-p334/bin/gem install rack -q --no-rdoc --no-ri -v "" returned 1
+    	Ran /home/cfsupp/cloudfoundry/.deployments/rest/deploy/rubies/ruby-1.8.7-p334/bin/gem install rack -q --no-rdoc --no-ri -v "" returned 1
 
 如果您重新运行 vcap_dev_setup 脚本，该脚本将从它停止的地方接着运行，并且这次应该会成功 
 安装 rack。您可能会多次遇到类似的错误；如果是这样，请再次尝试重新运行 vcap_dev_setup，直到它完成为止。
-
-
