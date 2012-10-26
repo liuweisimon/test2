@@ -1,6 +1,6 @@
-###安装部署 Cloud Foundry（/deploy/vSphere-CF.MD）###
+###安装部署 Cloud Foundry###
 
-在前面的文章中，我们安装了Micro BOSH和 BOSH。如果一切顺利，我们准备已经为好安装 Cloud Foundry做好准备了。首先，我们为Cloud Foundry的部署制定资源计划。
+在前面的文章中，我们安装了Micro BOSH和 BOSH。如果一切顺利，我们已经为安装 Cloud Foundry做好准备了。首先，我们为Cloud Foundry的部署制定资源计划。
 
 在我们编写本文时，完整的 Cloud Foundry 安装包含大约 34 个不同作业（虚拟机）。其中有些作业为核心组件，必须安装至少一个这类作业的实例；例如，Cloud Controller、NATS 和 DEA 等。有些作业应具有多个实例，具体取决于实际需求；例如 DEA 和router等。有些作业是可选的，例如服务网关和服务节点。因此，我们在安装 Cloud Foundry 前，应决定将哪些组件纳入部署范围。我们制定了要部署的组件的清单后，便可以规划每个作业所需的资源。通常，这些资源包括 IP 地址、CPU、内存和存储。下面是一个部署计划示例。
 
@@ -40,7 +40,6 @@
 |opentsdb	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
 |collector	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
 |dashboard	|1	|xx.xx.xx.xx	|1 GB	|1	|8	|可选|
-|-------|-------|-------|-------|-------|---------------|--------------|
 |合计：	|36	|	|39 GB	|40	|320	| |
 
 根据上表，我们便可以确定所需的资源池：
@@ -53,7 +52,7 @@
 
 根据上面两个表，我们可以修改清单文件。
 
-我们将清单文件命名为cf.yml。以下各节详细说明了其中的字段。 完整的Cloud Foundry部署yml文件，请参考：https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml（注，此yml文件是用来为Cloud Foundry的BOSH部署提供配置信息，与之前介绍的BOSH yml文件不同）
+我们将清单文件命名为cf.yml。以下各节详细说明了其中的字段。 完整的Cloud Foundry部署yml文件，请参考：[https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml](https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml)（注，此yml文件是用来为Cloud Foundry的BOSH部署提供配置信息，与之前介绍的BOSH yml文件不同）
 
 **name**
 
@@ -61,7 +60,7 @@
 
 **director_uuid**
 
-director UUID 是我们刚刚在第 III 部分中部署的 BOSH dDirector的 UUID。我们可以通过下面的命令来检索此值：
+director UUID 是我们部署的 BOSH Director的 UUID。我们可以通过下面的命令来检索此值：
 
 `$ bosh status`
 
@@ -77,6 +76,8 @@ director UUID 是我们刚刚在第 III 部分中部署的 BOSH dDirector的 UUI
 
 作业是 Cloud Foundry 的组件。每个作业在一个虚拟机上运行。各个作业的说明如下。
 
+|              |      |
+|-----------------------|---------------------------|
 |debian_nfs_server、services_nfs	|这两个作业在 Cloud Foundry 中用作 NFS 服务器。由于它们是文件服务器，因此我们应确保“persistent_disk”属性确实存在。|
 |syslog_aggregator	|此作业用于收集系统日志并将它们存储在数据库中。|
 |nats	|NATS 是 Cloud Foundry 的消息总线。它是 Cloud Foundry 中的核心组件之一。|
@@ -102,7 +103,7 @@ director UUID 是我们刚刚在第 III 部分中部署的 BOSH dDirector的 UUI
 
 domain：这是供用户访问的域的名称。我们还应创建一个 DNS 服务器来将该域解析为负载均衡器的 IP 地址。在我们的示例中，我们将域名设置为cf.local，以便用户在推送应用程序时可以使用vmc target api.cf.local。
 
-cc.srv_api_uri：此属性通常采用以下格式：http://api.<您的域名>。例如，如果我们将域设置为cf.local，那么srv_api_uri将为 http://api.cf.local。
+cc.srv_api_uri：此属性通常采用以下格式：`http://api.<您的域名>`。例如，如果我们将域设置为cf.local，那么srv_api_uri将为 `http://api.cf.local`。
 
 cc.password：此密码必须包含至少 16 个字符。
 
@@ -128,11 +129,11 @@ mysql_node.production：如果它为 True，则mysql_node的内存必须至少�
 
 您可以从以下位置下载部署Cloud Foundry的示例yml文件：
 
-https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml
+[https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml](https://github.com/vmware-china-se/bosh_doc/blob/master/cf.yml)
 
 此清单文件完成后，我们就可以开始安装 Cloud Foundry 了。
 
-1) 在之前的步骤中第 III 部分中，我们已经通过以下命令从Gerrit克隆了 CF 代码库：
+1) 在之前的步骤中，我们已经通过以下命令从Gerrit克隆了 CF 代码库：
 
 `$ gerrit clone ssh://<your username>@reviews.cloudfoundry.org:29418/cf-release.git`
 
@@ -146,6 +147,7 @@ $ bosh create release
 这将下载部署所需的所有包、blob 数据及其他资源。下载过程将耗费若干分钟，主要取决于网络速度。
 
 **注意：**
+
 1.如果您编辑了 CF Release中的代码，那么您可能需要在命令 bosh create release 中添加 --force 选项。
 
 2.在运行此命令时系统一定要直接连接Internet。
@@ -294,13 +296,13 @@ $ bosh create release
 
 如果上述测试顺利通过，则说明您的 Cloud Foundry 实例正常工作。最后要做的是部署负载均衡器和 DNS服务。它们不属于 Cloud Foundry 的组件，但在生产环境中往往需要正确地设置它们。我们简要地介绍一下如何设置。
 
-您可以部署一个硬件或软件负载均衡器 (LB) 来均匀地向多个router实例分配负载。在我们的示例部署中，我们有两个router。对于软件 LB，您可以使用Stingray 流量管理器。可从以下位置下载该软件：https://support.riverbed.com/download.htm?filename=public/software/stingray/trafficmanager/9.0/ZeusTM_90_Linux-x86_64.tgz
+您可以部署一个硬件或软件负载均衡器 (LB) 来均匀地向多个router实例分配负载。在我们的示例部署中，我们有两个router。对于软件 LB，您可以使用Stingray 流量管理器。可从以下位置下载该软件：[https://support.riverbed.com/download.htm?filename=public/software/stingray/trafficmanager/9.0/ZeusTM_90_Linux-x86_64.tgz](https://support.riverbed.com/download.htm?filename=public/software/stingray/trafficmanager/9.0/ZeusTM_90_Linux-x86_64.tgz)
 
 要解析 Cloud Foundry 实例所属的域名，需要有 DNS 服务器。基本而言，DNS 服务器会将像 *.yourdomain.com 这样带通配符的域名解析为负载均衡器的 IP 地址。如果您没有 LB，您可以设置 DNS Rotation，从而以循环方式将域解析为各个router的地址。
 
 LB 和 DNS 设置妥善后，您便可以开始在您的实例上部署应用程序。
 
-VMC 是使用Cloud Foundry的命令行工具。它可以执行 Cloud Foundry 上的大多数操作，例如配置应用程序、将应用部署到 Cloud Foundry 以及监控应用程序的状态。要安装 VMC，需要先安装 Ruby 和RubyGems（ Ruby Gem管理器）。目前支持 Ruby 1.8.7 和 1.9.2。接着，您可以通过下面的命令安装 VMC（有关 VMC 安装的更多信息，请参见http://docs.cloudfoundry.com/tools/vmc/installing-vmc.html）：
+VMC 是使用Cloud Foundry的命令行工具。它可以执行 Cloud Foundry 上的大多数操作，例如配置应用程序、将应用部署到 Cloud Foundry 以及监控应用程序的状态。要安装 VMC，需要先安装 Ruby 和RubyGems（ Ruby Gem管理器）。目前支持 Ruby 1.8.7 和 1.9.2。接着，您可以通过下面的命令安装 VMC（有关 VMC 安装的更多信息，请参见[http://docs.cloudfoundry.com/tools/vmc/installing-vmc.html](http://docs.cloudfoundry.com/tools/vmc/installing-vmc.html)）：
 
 `$ sudo gem install vmc`
 

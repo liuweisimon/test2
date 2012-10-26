@@ -1,8 +1,9 @@
-###安装Micro BOSH和 BOSH（deploy/vSphere-BOSH.MD）###
+###安装 BOSH###
 
 BOSH CLI 安装完毕后，我们现在便开始安装Micro BOSH。如前文所述，可以将Micro BOSH视作袖珍版的 BOSH。尽管标准的 BOSH各个组件分布在 6 个虚拟机上 ，但Micro BOSH却恰恰相反，它在单个虚拟机中包含了所有组件。它可以轻易的设置，通常用于部署小型的Release，如 BOSH。从这个意义上讲，BOSH 是自部署的。用 BOSH 团队的话说，这叫做“Inception”。
 
 以下步骤是通过在 BOSH 官方文档基础上添加更多操作细节改编成的。
+
 1.在 BOSH CLI 虚拟机中，安装 BOSH 部署器 ruby gem。
 
 `$ gem install bosh_deployer`
@@ -80,7 +81,7 @@ $ cd ~
 
 下面是Micro BOSH的一个示例yml文件的链接：
 
-https://github.com/vmware-china-se/bosh_doc/blob/master/micro.yml
+[https://github.com/vmware-china-se/bosh_doc/blob/master/micro.yml](https://github.com/vmware-china-se/bosh_doc/blob/master/micro.yml)
 
 6.使用以下命令设置此Micro BOSH部署：
 
@@ -89,7 +90,7 @@ https://github.com/vmware-china-se/bosh_doc/blob/master/micro.yml
 $ bosh micro deployment micro01
 ```
 
-部署设置为“~/deployments/micro01/micro_bosh.yml”	部署设置为“~/deployments/micro01/micro_bosh.yml”
+		部署设置为“~/deployments/micro01/micro_bosh.yml”
 
 `$ bosh micro deploy ~/stemcells/micro-bosh-stemcell-0.1.0.tgz`
 
@@ -109,14 +110,14 @@ $ bosh micro deployment micro01
 
 Micro BOSH准备就绪后，我们就可用它来部署 BOSH。BOSH 是一个包含 6 个虚机的分布式系统。正如上一节所提到的那样，我们需要有三项内容：一个作为虚拟机模板的stemcell、一个作为待部署软件的 BOSH Release，以及一个用来定义部署配置的部署清单文件。我们来逐一准备。
 
-1.首先，我们将 BOSH CLI 的目标设为Micro BOSH的dDirector。可以将 BOSH diDirector视作 BOSH 的控制者或协调者。所有 BOSH CLI 命令均发往该dDirector加以执行。该dDirector的 IP 地址在我们用来创建Micro BOSH的 yml 文件中定义。BOSH dDirector的默认用户/密码为 admin/admin。在我们的示例中，我们使用下面的命令来设定Micro BOSH的目标和进行身份验证：
+1)首先，我们将 BOSH CLI 的目标设为Micro BOSH的Director。可以将 BOSH Director视作 BOSH 的控制者或协调者。所有 BOSH CLI 命令均发往该Director加以执行。该Director的 IP 地址在我们用来创建Micro BOSH的 yml 文件中定义。BOSH Director的默认用户/密码为 admin/admin。在我们的示例中，我们使用下面的命令来设定Micro BOSH的目标和进行身份验证：
 
 ```
  $ bosh target 10.60.98.124:25555
 $ bosh login
 ```
 
-1.接下来，我们下载 BOSH stemcell并将其上传到Micro BOSH。这一步与下载Micro BOSH的 stemcell 类似。唯一的差别在于，我们选择的是 BOSH 而非Micro BOSH的stemcell。
+2)接下来，我们下载 BOSH stemcell并将其上传到Micro BOSH。这一步与下载Micro BOSH的 stemcell 类似。唯一的差别在于，我们选择的是 BOSH 而非Micro BOSH的stemcell。
 
 ```
 $ cd ~/stemcells
@@ -132,26 +133,26 @@ $ bosh download public stemcell bosh-stemcell-vsphere-0.6.4.tgz
 
 如果您已在第 II 部分中创建了Gerrit帐户，请跳过第 3 步至第 7 步。
 
-1.在以下位置注册 Cloud Foundry Gerrit服务器：http://reviews.cloudfoundry.org
+3)在以下位置注册 Cloud Foundry Gerrit服务器：[http://reviews.cloudfoundry.org](http://reviews.cloudfoundry.org)
 
-1.设置您的 ssh 公钥（接受所有默认值）
+4)设置您的 ssh 公钥（接受所有默认值）
 
 `$ ssh-keygen -t rsa`
 
 将您的密钥从 ~/.ssh/id_rsa.pub 复制到您的Gerrit帐户中
 
-1.在您的Gerrit帐户配置文件中创建并上传自己的 SSH 公钥
+5)在您的Gerrit帐户配置文件中创建并上传自己的 SSH 公钥
 
-1.设置您的姓名和电子邮件
+6)设置您的姓名和电子邮件
 
 ```
 $ git config --global user.name "FirstnameLastname"
 $ gitconfig --global user.emailyour_email@youremail.com
 ```
 
-1.安装gerrit-cli gem
+7)安装gerrit-cli gem
 
-1.使用Gerrit从 Cloud Foundry 代码库中克隆Release代码。以下命令分别获取 BOSH 和 Cloud Foundry 的代码。
+8)使用Gerrit从 Cloud Foundry 代码库中克隆Release代码。以下命令分别获取 BOSH 和 Cloud Foundry 的代码。
 
 ```
 $ gerrit clone ssh://<yourusername>@reviews.cloudfoundry.org:29418/bosh.git 
@@ -209,11 +210,11 @@ $ bosh create release  --with-tarball
 		Release manifest:/home/boshcli/bosh-release/dev_releases/bosh-dev1-6.1-dev.yml
 		Release tarball (88.8M):/home/boshcli/bosh-release/dev_releases/bosh-dev1-6.1-dev.tgz
 
-1.将创建好的Release上传到Micro BOSH的director。
+9)将创建好的Release上传到Micro BOSH的director。
 
 `$ bosh upload release dev_releases/bosh-dev1-6.1-dev.tgz `
 
-1.配置 BOSH 部署清单。首先，我们通过执行以下命令获取该director的 UUID 信息：
+10)配置 BOSH 部署清单。首先，我们通过执行以下命令获取该director的 UUID 信息：
 
 `$ bosh status`
 
@@ -254,7 +255,7 @@ reserved：BOSH 不应使用的 IP 地址。请务必要排除所有已经分配
 
 cloud_properties：name 是我们在 vSphere 中定义的网络名称（见第 II 部分）。
 
-**Resource Pool (资源池)（resource_pools）**
+**资源池（resource_pools）**
 
 此节定义作业使用的虚拟机配置（CPU、内存、磁盘和网络）。通常，应用程序的各个作业在资源使用方面各异。例如，有些作业需要较多的内存量，而有些作业则需要更多的vCPU来执行计算密集型任务。根据实际需要，我们应创建一个或多个资源池。需要注意的是，所有池的总规模应等于在清单文件中定义的作业实例的总数。部署 BOSH 时，由于总共有 6 个虚拟机（6 个作业），因此所有池的规模加起来应等于 6。
 
@@ -280,20 +281,20 @@ cloud_properties：name 是我们在 vSphere 中定义的网络名称（见第 I
 
 最好填写一张像下面这样的电子表格来对您的部署进行规划。您可以根据该电子表格修改部署清单。
 
-|作业	|资源池	|IP|
-|-------|-------|--|
-|nats	|small	|10.60.98.120|
-|postgres	|medium	|10.60.98.119|
-|redis	|small	|10.60.98.118|
-|director	|director	|10.60.98.117|
-|blob_store	|medium	|10.60.98.116|
-|health_monitor	|small	|10.60.98.115|
+|作业|	资源池   |IP  |
+|-------------|--------|-------------------|
+|nats	|small	|10.60.98.120	|
+|postgres	|medium	|10.60.98.119	|
+|redis |small	|10.60.98.118	|
+|director	|director	|10.60.98.117	|
+|blob_store	|medium	|10.60.98.116	|
+|health_monitor |small	|10.60.98.115	|
 
 我们基于上表创建了一个示例部署清单，您可以从这里下载：
 
-https://github.com/vmware-china-se/bosh_doc/blob/master/bosh.yml
+[https://github.com/vmware-china-se/bosh_doc/blob/master/bosh.yml](https://github.com/vmware-china-se/bosh_doc/blob/master/bosh.yml)
 
-1.更新完部署清单文件后，我们便可以通过运行以下命令开始实际部署：
+11)更新完部署清单文件后，我们便可以通过运行以下命令开始实际部署：
 
 ```
 $ bosh deployment bosh_dev1.yml
@@ -334,7 +335,7 @@ $ bosh deploy
     
 这表示您已成功部署 BOSH。您可以通过执行下面的命令来查看您的部署：
 
-$ bosh deployments
+`$ bosh deployments`
 
 		+-------+
 		| Name  |
@@ -360,4 +361,3 @@ $ bosh deployments
 		+------------------+---------+---------------+--------------+
 		VMs total: 6
 
-##第 IV 部分##
