@@ -1,38 +1,27 @@
 ﻿部署配置文件主要包含以下几节内容
-
 1. 部署
-
 2. 作业。
 
 
 部署
-
 ----------
 有关您的部署的一些基本信息。
 
 
 例如
-
 ---
 deployment:
-
 # 此部署的名称
-
 name:
 "sample_deployment"
-
 # 将作为 cloudfoundry 运行身份的用户，默认为运行安装脚本的
-
 # 用户
-
 # user:
 "<user>"
 
 
 # cloudfoundry 所属的组，默认为运行安装脚本的用户所属的
-
 # 组
-
 # group:
 "<group>"
 
