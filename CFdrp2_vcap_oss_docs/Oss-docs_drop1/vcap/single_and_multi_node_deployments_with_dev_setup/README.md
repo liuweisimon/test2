@@ -279,13 +279,13 @@ sudo apt-get install openssh-server
 
     
     ---  
-deployment:  
-name:"rest"  
-jobs:  
-install:  
+    deployment:  
+    name:"rest"  
+    jobs:  
+    install:  
         - nats_server  
         - cloud_controller :  
-builtin_services:  
+    builtin_services:  
               - redis  
               - mongodb  
               - mysql  
@@ -293,11 +293,11 @@ builtin_services:
         - health_manager  
         - ccdb  
         - redis:  
-index: "0"  
+    index: "0"  
         - redis_gateway  
         - mysql_gateway  
         - mongodb:  
-index: "0"  
+    index: "0"  
         - mongodb_gateway
 
 使用下面的配置文件选项调用 vcap_dev_setup 脚本：
