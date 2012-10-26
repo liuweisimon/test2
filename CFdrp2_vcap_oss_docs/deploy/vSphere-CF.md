@@ -363,6 +363,8 @@ end
 
 现在，到浏览器中访问该应用程序的 URL：hello.cf.local。如果您可以看到下面的文本，则说明您的应用程序已成功部署。
 
+![fig27.png](/images/deploy/fig27.png)
+
 恭喜！您的 Cloud Foundry 实例已经完全设置好了。它在功能上与 cloudfoundry.com 完全相同。
 
 
