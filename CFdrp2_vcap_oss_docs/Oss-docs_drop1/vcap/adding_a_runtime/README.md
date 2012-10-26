@@ -100,18 +100,18 @@ Foundry 中添加运行时来供现有框架使用。有关如何添加框架的
   - "ruby193"
      default: false
 
-## Add the Runtime to the DEA
+## 将运行时添加到 DEA 中
 
-1. Add the runtime to DEA attributes
+1. 将运行时添加到 DEA 属性中
 
-   In dev_setup/cookbooks/dea/attributes/default.rb:
+   在 dev_setup/cookbooks/dea/attributes/default.rb 中：
    ```
    default[:dea][:runtimes] = ["ruby18", "ruby19", "ruby193", "node04", "node06", "node08", "java", "java7", "erlang", "php", "python2"]
    ```
 
-2. Enable the recipe
+2. 启用方法
 
-   Add the new recipe to dev_setup/cookbooks/dea/recipes/default.rb
+   将新方法添加到 dev_setup/cookbooks/dea/recipes/default.rb 中
    ```
    node[:dea][:runtimes].each do |runtime|
      case runtime
@@ -119,11 +119,11 @@ Foundry 中添加运行时来供现有框架使用。有关如何添加框架的
        include_recipe "ruby::ruby193"
    ```
 
-3. Add the runtime to DEA config
+3. 将运行时添加到 DEA 配置中
 
-   The DEA only allows apps to be deployed with runtimes listed in dea.yml.
+   DEA 仅允许将应用程序与 dea.yml 中列出的运行时一起部署。
 
-   Modify dev_setup/cookbooks/dea/templates/default/dea.yml.erb:
+   修改 dev_setup/cookbooks/dea/templates/default/dea.yml.erb：
    ```
    runtimes:
    <% if node[:dea][:runtimes].include?("ruby193") %>
@@ -131,10 +131,10 @@ Foundry 中添加运行时来供现有框架使用。有关如何添加框架的
    <% end %>
    ```
 
-## Try it out
-Once we have successfully run dev_setup, we can use vmc to verify that the runtime has been added. "vmc runtimes" should list the runtime info.  Note that the current stable version of vmc requires a runtime to be added to at least one framework in order to be listed.
+## 试一下
+一旦成功运行 dev_setup，就可以使用 vmc 验证已经添加了运行时。“vmc runtimes”应该会列出运行时信息。请注意，目前稳定版本的 vmc 要求运行时至少要添加到一个框架中，这样运行时才能在上述文件中列出。
 
-We should be able to push a simple standalone Ruby application using vmc.  Here is an application that simply outputs the Ruby version and then sleeps indefinitely:
+我们使用 vmc 应该可以推送简单的独立 Ruby 应用程序。下面这个应用程序可以轻松地输出 Ruby 版本，然后一直休眠：
 
 ```
 $ more simple.rb
