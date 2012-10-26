@@ -965,159 +965,159 @@ AWS 所特有的云属性如下
 
 BOSH 命令行界面用于与 BOSH 控制器进行交互以便在云上执行操作。如需最近发布的关于其功能的文档，请安装 BOSH，然后键入 `bosh` 即可。Usage:
 
-bosh [--verbose] [--config|-c <FILE>] [--cache-dir <DIR]
-[--force] [--no-color] [--skip-director-checks] [--quiet]
-[--non-interactive]
-command [<args>]
+		bosh [--verbose] [--config|-c <FILE>] [--cache-dir <DIR]
+		[--force] [--no-color] [--skip-director-checks] [--quiet]
+		[--non-interactive]
+		command [<args>]
 
 目前可供使用的 BOSH 命令有：
 
-部署
-deployment [<name>]       选择要使用的部署（它还会更新
-当前目标）
-delete deployment <name>  删除部署
-                                --force    在删除部署的组成部分时忽略
-所有错误
-deployments               显示可用部署的列表
-deploy                    按照当前选择的部署清单
-进行部署
-                                --recreate 在部署过程中重新创建所有虚拟机
-diff [<template_file>]    将您当前的 BOSH 部署
-配置与指定的 BOSH 部署
-配置模板区分开来，以便
-您可以使您的部署配置文件保持
-最新状态。可以在部署 repo 中找到开发
-模板。
-
-发行版管理
-create release            创建发行版（假定当前目录为
-发行版资源库）
-                                --force    绕过 git 脏状态检查
-                                --final    创建可投入生产环境中使用的发行版
-（将项目存储在 blobstore 中，
-增加最终版本）
-                                --with-tarball
-创建完整的发行版 tar 包（默认情况下
-仅创建清单）
-                                --dry-run  先停止，再写入发行版清单
-（用于诊断）
-delete release <name> [<version>]
-删除发行版（或发行版的特定版本）
-                                --force    在删除期间忽略错误
-verify release <path>     验证发行版
-upload release [<path>]   上传发行版（<path> 可以指向 tar 包或
-清单，默认为指向最新创建的
-发行版）
-releases                  显示可用发行版的列表
-reset release             重置发行版部署环境（删除
-所有开发项目）
-
-init release [<path>]     初始化发行版目录
-generate package <name>   生成包模板
-generate job <name>       生成作业模板
-
-Stemcell
-upload stemcell <path>    上传 stemcell
-verify stemcell <path>    验证 stemcell
-stemcells                 显示可用 stemcell 的列表
-delete stemcell <name> <version>
-删除 stemcell
-public stemcells          显示供下载的公开 stemcell 的
-列表。
-download public stemcell <stemcell_name>
-从公共 blobstore 下载 stemcell。
-
-用户管理
-create user [<name>] [<password>]
-创建用户
-
-作业管理
-start <job> [<index>]     启动作业/实例
-stop <job> [<index>]      停止作业/实例
-                                --soft     仅停止进程
-                                --hard     关闭虚拟机
-restart <job> [<index>]   重新启动作业/实例（软停止 + 启动）
-recreate <job> [<index>]  重新创建作业/实例（硬停止 + 启动）
-
-日志管理
-logs <job> <index>        提取作业日志（默认）或代理日志（如果提供了
-选项）
-                                --agent    提取代理日志
-                                --only <filter1>[...]
-仅提取符合指定过滤器
-（在作业规范中定义）的条件的日志
-                                --all      提取作业或代理日志目录中的所有
-目录
-
-任务管理
-tasks                     显示正在运行的任务的列表
-tasks recent [<number>]   显示最近 <number> 项任务
-task [<task_id>|last]     显示任务状态并开始跟踪其输出
-                                --no-cache 不在本地缓存输出
-                                --event|--soap|--debug
-要跟踪的不同日志类型
-                                --raw      不美化日志
-cancel task <id>          任务一旦达到下一个取消检查点，
-即将其取消
-
-属性管理
-set property <name> <value>
-设置部署属性
-get property <name>       获取部署属性
-unset property <name>     取消对部署属性进行的设置
-properties                列出当前部署属性
-                                --terse    便于分析输出
-
-维护
-cleanup                   从当前控制器中删除除最近几个 stemcell 和发行版
-以外的所有 stemcell 和发行版（不删除
-当前正在使用的 stemcell 和发行版）
-cloudcheck                云一致性检查和交互式修复
-                                --auto     自动解决问题（对于生产环境，
-不推荐使用）
-                                --report   仅生成报告，不尝试
-解决问题
-
-其他
-status                    显示当前状态（当前目标、用户、
-部署信息等）
-vms [<deployment>]        列出所有应在部署范围内的虚拟机
-target [<name>] [<alias>] 选择要与哪个控制器通信（还可以选择创建
-一个别名）。如果不提供参数，则显示当前
-设为目标的控制器
-login [<name>] [<password>]
-为与目标控制器的
-后续交互提供凭据
-logout                    忘记已保存的目标控制器凭据
-purge                     清除本地清单缓存
-
-远程访问
-ssh <job> [index] [<options>] [command]
-在指定了作业的情况下，执行指定的命令或启动
-交互式会话
-                                --public_key <file>
-                                --gateway_host <host>
-                                --gateway_user <user>
-                                --default_password
-使用默认的 ssh 密码。不
-推荐使用。
-scp <job> <--upload | --download> [options] /path/to/source /path/to/destination
-将源文件上传/下载到指定的作业。
-注意：如果是下载，则 /path/to/destination 是一个
-目录
-                                --index <job_index>
-                                --public_key <file>
-                                --gateway_host <host>
-                                --gateway_user <user>
-ssh_cleanup <job> [index] 清理 SSH 证书
-
-Blob
-upload blob <blobs>      将指定的 blob 上传到 blobstore
-                                --force    绕过重复项检查
-sync blobs                将 blob 与 blobstore 同步
-                                --force    用远程 blob 覆盖所有
-本地副本
-blobs                     输出 blob 状态
+		部署
+		deployment [<name>]       选择要使用的部署（它还会更新
+		当前目标）
+		delete deployment <name>  删除部署
+		                                --force    在删除部署的组成部分时忽略
+		所有错误
+		deployments               显示可用部署的列表
+		deploy                    按照当前选择的部署清单
+		进行部署
+		                                --recreate 在部署过程中重新创建所有虚拟机
+		diff [<template_file>]    将您当前的 BOSH 部署
+		配置与指定的 BOSH 部署
+		配置模板区分开来，以便
+		您可以使您的部署配置文件保持
+		最新状态。可以在部署 repo 中找到开发
+		模板。
+		
+		发行版管理
+		create release            创建发行版（假定当前目录为
+		发行版资源库）
+		                                --force    绕过 git 脏状态检查
+		                                --final    创建可投入生产环境中使用的发行版
+		（将项目存储在 blobstore 中，
+		增加最终版本）
+		                                --with-tarball
+		创建完整的发行版 tar 包（默认情况下
+		仅创建清单）
+		                                --dry-run  先停止，再写入发行版清单
+		（用于诊断）
+		delete release <name> [<version>]
+		删除发行版（或发行版的特定版本）
+		                                --force    在删除期间忽略错误
+		verify release <path>     验证发行版
+		upload release [<path>]   上传发行版（<path> 可以指向 tar 包或
+		清单，默认为指向最新创建的
+		发行版）
+		releases                  显示可用发行版的列表
+		reset release             重置发行版部署环境（删除
+		所有开发项目）
+		
+		init release [<path>]     初始化发行版目录
+		generate package <name>   生成包模板
+		generate job <name>       生成作业模板
+		
+		Stemcell
+		upload stemcell <path>    上传 stemcell
+		verify stemcell <path>    验证 stemcell
+		stemcells                 显示可用 stemcell 的列表
+		delete stemcell <name> <version>
+		删除 stemcell
+		public stemcells          显示供下载的公开 stemcell 的
+		列表。
+		download public stemcell <stemcell_name>
+		从公共 blobstore 下载 stemcell。
+		
+		用户管理
+		create user [<name>] [<password>]
+		创建用户
+		
+		作业管理
+		start <job> [<index>]     启动作业/实例
+		stop <job> [<index>]      停止作业/实例
+		                                --soft     仅停止进程
+		                                --hard     关闭虚拟机
+		restart <job> [<index>]   重新启动作业/实例（软停止 + 启动）
+		recreate <job> [<index>]  重新创建作业/实例（硬停止 + 启动）
+		
+		日志管理
+		logs <job> <index>        提取作业日志（默认）或代理日志（如果提供了
+		选项）
+		                                --agent    提取代理日志
+		                                --only <filter1>[...]
+		仅提取符合指定过滤器
+		（在作业规范中定义）的条件的日志
+		                                --all      提取作业或代理日志目录中的所有
+		目录
+		
+		任务管理
+		tasks                     显示正在运行的任务的列表
+		tasks recent [<number>]   显示最近 <number> 项任务
+		task [<task_id>|last]     显示任务状态并开始跟踪其输出
+		                                --no-cache 不在本地缓存输出
+		                                --event|--soap|--debug
+		要跟踪的不同日志类型
+		                                --raw      不美化日志
+		cancel task <id>          任务一旦达到下一个取消检查点，
+		即将其取消
+		
+		属性管理
+		set property <name> <value>
+		设置部署属性
+		get property <name>       获取部署属性
+		unset property <name>     取消对部署属性进行的设置
+		properties                列出当前部署属性
+		                                --terse    便于分析输出
+		
+		维护
+		cleanup                   从当前控制器中删除除最近几个 stemcell 和发行版
+		以外的所有 stemcell 和发行版（不删除
+		当前正在使用的 stemcell 和发行版）
+		cloudcheck                云一致性检查和交互式修复
+		                                --auto     自动解决问题（对于生产环境，
+		不推荐使用）
+		                                --report   仅生成报告，不尝试
+		解决问题
+		
+		其他
+		status                    显示当前状态（当前目标、用户、
+		部署信息等）
+		vms [<deployment>]        列出所有应在部署范围内的虚拟机
+		target [<name>] [<alias>] 选择要与哪个控制器通信（还可以选择创建
+		一个别名）。如果不提供参数，则显示当前
+		设为目标的控制器
+		login [<name>] [<password>]
+		为与目标控制器的
+		后续交互提供凭据
+		logout                    忘记已保存的目标控制器凭据
+		purge                     清除本地清单缓存
+		
+		远程访问
+		ssh <job> [index] [<options>] [command]
+		在指定了作业的情况下，执行指定的命令或启动
+		交互式会话
+		                                --public_key <file>
+		                                --gateway_host <host>
+		                                --gateway_user <user>
+		                                --default_password
+		使用默认的 ssh 密码。不
+		推荐使用。
+		scp <job> <--upload | --download> [options] /path/to/source /path/to/destination
+		将源文件上传/下载到指定的作业。
+		注意：如果是下载，则 /path/to/destination 是一个
+		目录
+		                                --index <job_index>
+		                                --public_key <file>
+		                                --gateway_host <host>
+		                                --gateway_user <user>
+		ssh_cleanup <job> [index] 清理 SSH 证书
+		
+		Blob
+		upload blob <blobs>      将指定的 blob 上传到 blobstore
+		                                --force    绕过重复项检查
+		sync blobs                将 blob 与 blobstore 同步
+		                                --force    用远程 blob 覆盖所有
+		本地副本
+		blobs                     输出 blob 状态
 
 # 发行版 #
 
@@ -1154,10 +1154,10 @@ BOSH 发行版是基于一个目录树构建的，此目录树包含本节中所
 
 这些文件位于 `templates` 目录中，在作业 `spec` 文件中的 templates 部分中提供了模板文件与其最终位置之间的映射关系。例如
 
-templates:
-foo_ctl.erb:bin/foo_ctl
-foo.yml.erb:config/foo.yml
-foo.txt:config/foo.txt
+		templates:
+		foo_ctl.erb:bin/foo_ctl
+		foo.yml.erb:config/foo.yml
+		foo.txt:config/foo.txt
 
 ### 属性的用法 ###
 
@@ -1246,17 +1246,17 @@ Atmos 是 EMC 出品的一款共享存储解决方案。要使用 Atmos，请编
 `config/final.yml` 文件
 
     ---
-blobstore:
-provider:atmos
-options:
-tag:BOSH
-url:https://blob.cfblob.com
-uid:1876876dba98981ccd091981731deab2/user1
-
+	blobstore:
+	provider:atmos
+	options:
+	tag:BOSH
+	url:https://blob.cfblob.com
+	uid:1876876dba98981ccd091981731deab2/user1
+	
 `config/private.yml` 文件
 
     ---
-blobstore_secret:ahye7dAS93kjWOIpqla9as8GBu1=
+	blobstore_secret:ahye7dAS93kjWOIpqla9as8GBu1=
 
 ### S3 ###
 
@@ -1265,17 +1265,17 @@ blobstore_secret:ahye7dAS93kjWOIpqla9as8GBu1=
 `config/final.yml` 文件
 
     ---
-blobstore:
-provider:s3
-options:
-access_key_id:KIAK876234KJASDIUH32
-bucket_name:87623bdc
-encryption_key:sp$abcd123$foobar1234
-
+	blobstore:
+	provider:s3
+	options:
+	access_key_id:KIAK876234KJASDIUH32
+	bucket_name:87623bdc
+	encryption_key:sp$abcd123$foobar1234
+	
 `config/private.yml` 文件
 
     ---
-blobstore_secret:kjhasdUIHIkjas765/kjahsIUH54asd/kjasdUSf
+	blobstore_secret:kjhasdUIHIkjas765/kjahsIUH54asd/kjasdUSf
 
 ### 本地 ###
 
@@ -1284,10 +1284,10 @@ blobstore_secret:kjhasdUIHIkjas765/kjahsIUH54asd/kjasdUSf
 `config/final.yml` 文件
 
     ---
-blobstore:
-provider:local
-options:
-blobstore_path:/path/to/blobstore/directory
+	blobstore:
+	provider:local
+	options:
+	blobstore_path:/path/to/blobstore/directory
 
 请注意，应仅将 **only** 用于测试目的，因为无法与其他对象共享它（除非这些对象运行在同一系统上）。
 
@@ -1371,7 +1371,7 @@ blobstore_path:/path/to/blobstore/directory
 
 初始化一个新的发行版资源库：
 
-bosh init release <code style="color:red;">bosh-sample-release</code> --git
+	bosh init release <code style="color:red;">bosh-sample-release</code> --git
 
 在该发行版资源库中，创建包含以下内容的 `config/final.yml` 文件：
 
