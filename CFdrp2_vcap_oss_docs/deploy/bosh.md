@@ -10,6 +10,8 @@ BOSH 是一款供我们用来将 Cloud Foundry 组件部署到分布式节点上
 
 BOSH 是 Bosh OutterSHell（Bosh 外壳）的递归缩写词。相对于“外壳”（Outter Shell），由 BOSH 部署和管理的系统则称作“内壳”（Inner Shell）。下图显示了一个简化的 BOSH 模型。
 
+![fig1.png](/images/deploy/fig1.png)
+
 可以将 BOSH 视作一台负责协调分布式系统部署过程的服务器或机器人。有个Ruby 工具可以与 BOSH 命令行界面 (CLI) 进行交互。BOSH 需要以下三个必备项才能开始部署系统：一个stemcell、一个Release（要安装的软件）和一个部署清单(Deployment Manifest)。我们来更详细地了解一下这三项内容。
 
 Stemcell：在云平台中，虚拟机通常是从模板克隆而来的。一个stemcell就是一个包含标准 Ubuntu  Linux的虚拟机模板。该模板中还嵌入了一个 BOSH 代理，以便 BOSH 可以控制从该stemcell克隆出来的虚拟机。“stemcell”这个名字源自于“stem cell”（干细胞）这个生物学术语，该术语指的是能够生成各种细胞的未分化细胞。同样，一个 BOSH stemcell所创建的各个虚拟机起初也是完全相同的。初始化后，这些虚拟机便配置了不同的 CPU、内存、存储和网络参数，并装有不同的软件包。因此，基于同一个stemcell模板构建的虚拟机会表现出不同的行为。
