@@ -1,153 +1,51 @@
-﻿# 分步指南：
+﻿# 分步指南：向开源软件 Cloud Foundry 添加系统服务
 
-向开源软件 Cloud Foundry 添加系统服务
-
-
-
-_作者：
-
-**Georgi Sabev
-
-**_
+_作者：**Georgi Sabev**_
 
 ## 概述
 
-
-
 本指南将一步步为您介绍向 Cloud Foundry 环境中
-
-
-添加新服务的过程，并向您说明如何从 Web 应用程序中使用此服务
-
-
-。
-
-本教程适用于使用 [dev
-
-_setup 安装](https://github.com/cloudfoundry/oss-docs/tree/master/vcap/single_and_multi_node_deployments_with_dev_setup)的 Cloud
-
-
-Foundry。
-
+添加新服务的过程，并向您说明如何从 Web 应用程序中使用此服务。
+本教程适用于使用 [dev_setup 安装](https://github.com/cloudfoundry/oss-docs/tree/master/vcap/single_and_multi_node_deployments_with_dev_setup)的 CloudFoundry。
 出于本指南的需要，我们提供了一项示例回显服务，
-
-
 以及一个发送待回显消息的示例使用者 Web 应用程序。
-
-这两者
-
-
-都是使用 java 编写的，不过，您可以用您想用的任何语言编写您自己的服务，
-
-
-并可以用 Cloud Foundry 支持的任何语言来编写作为使用方的
-
-
-应用程序。
-
-每项服务都有一个服务节点、一个置备器和一个服务网关。
-
-
-服务节点是 Cloud Foundry 服务的实现。
-
-置备器
-
-
-是在置备或取消置备该服务时执行
-
-
-特定于域的操作的代理。
-
+这两者都是使用 java 编写的，不过，您可以用您想用的任何语言编写您自己的服务，
+并可以用 Cloud Foundry 支持的任何语言来编写作为使用方的应用程序。
+每项服务都有一个服务节点、一个置备器和一个服务网关。服务节点是 Cloud Foundry 服务的实现。
+置备器是在置备或取消置备该服务时执行特定于域的操作的代理。
 例如，在置备标准的 MySQL 服务时，
-
-
 该服务会创建一个新用户和架构。
-
 服务网关是用来与服务置备器
-
-
 进行交互的 REST 接口。
-
-下面是一张显示了
-
-
-这些基本组件的小图片：
-
-
+下面是一张显示了这些基本组件的小图片：
 
 ![service_provisioning.png](https://github.com/cloudfoundry/oss-docs/raw/master/vcap/adding_a_system_service/images/service_provisioning.png)
 
 ## Cloud Foundry 中的服务
 
-
-
-在 Cloud Foundry 中，有两种基本的服务状态，即系统服务
-
-
-和置备的服务。
-
-系统服务是可供系统使用的所有类型
-
-
-的服务。
-
-可以置备这些类型的服务并将它们绑定到
-
-
-应用程序。
-
+在 Cloud Foundry 中，有两种基本的服务状态，即系统服务和置备的服务。
+系统服务是可供系统使用的所有类型的服务。
+可以置备这些类型的服务并将它们绑定到应用程序。
 置备一项服务时，需为其指定一个名称。
-
-应用程序以后
-
-
-将使用此名称来查找有关所置备服务的元数据。
-
-
-您可以通过登录到 vmc 并键入
-
-
-`vmc services` 来将系统服务和置备的服务都列出来：
-
-
+应用程序以后将使用此名称来查找有关所置备服务的元数据。
+您可以通过登录到 vmc 
+并键入`vmc services` 来将系统服务和置备的服务都列出来：
 
 ![services.png](https://github.com/cloudfoundry/oss-docs/raw/master/vcap/adding_a_system_service/images/services.png)
 
 ## 我们引入了一个“回显”样板示例服务，您可以将它复制过来并根据自己的使用情况对它进行更新。
 
-
-
-完成 dev
-
-_setup 后，服务目录 (vcap-services repo) 将被放置在 `.../cloudfoundry/vcap/`
-
- 
+完成 dev_setup 后，服务目录 (vcap-services repo) 将被放置在 `.../cloudfoundry/vcap/`
 ，此时您可以在 `...cloudfoundry/vcap/services/echo` 处找到此回显服务的实现。
 
-
-
 用“排除的组件”构建此回显服务（请参见 `https://github.com/cloudfoundry/vcap/blob/master/dev_setup/README`）后，请重新运行 `.../cloudfoundry/vcap/dev_setup/bin/vcap_dev start`，
-
-
 我们的回显服务将作为一项系统服务显示在
-
-
 `vmc services` 输出的表中。
-
 本指南既可用于
-
-
 单机 Cloud Foundry 环境，又可用于分布式 Cloud Foundry 环境。
-
 **请注意，我们所用的
-
-
 省略号 (...) 表示 Cloud Foundry 的安装目录。**
-
-
 如果您要构建自己的服务，您需要注意以下方面：
-
-
 
 1. 在
 
